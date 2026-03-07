@@ -1,28 +1,26 @@
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, User, Lock, FileText, Shield, ChevronRight, LogOut } from 'lucide-react'
+import { useAuthStore } from '@/store/useAuthStore'
 
 export default function Perfil() {
     const navigate = useNavigate()
+    const { user, logout } = useAuthStore()
+
+    const initials = user?.name
+        ? user.name.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase()
+        : '?'
 
     const menuItems = [
         { icon: User, label: 'Meus Dados Pessoais', sub: 'Nome, CPF, Telefone', color: 'bg-primary/10 text-primary', route: '/meus-dados' },
         { icon: Lock, label: 'Alterar Senha', sub: 'Segurança da conta', color: 'bg-primary/10 text-primary', route: '/alterar-senha' },
-        {
-            icon: FileText,
-            label: 'Renovar Semestre',
-            sub: 'Documentação necessária',
-            color: 'bg-orange-100 text-orange-600',
-            badge: 'PENDENTE',
-            route: '/renovar-semestre',
-        },
-        {
-            icon: Shield,
-            label: 'Regras e Penalidades',
-            sub: <span>Você possui <span className="text-emerald-500 font-bold">0 advertências</span></span>,
-            color: 'bg-primary/10 text-primary',
-            route: '/regras',
-        },
+        { icon: FileText, label: 'Renovar Semestre', sub: 'Documentação necessária', color: 'bg-orange-100 text-orange-600', route: '/renovar-semestre' },
+        { icon: Shield, label: 'Regras e Penalidades', sub: 'Advertências e penalidades', color: 'bg-primary/10 text-primary', route: '/regras' },
     ]
+
+    const handleLogout = () => {
+        logout()
+        navigate('/login')
+    }
 
     return (
         <div className="flex flex-col min-h-full bg-white">
@@ -49,13 +47,13 @@ export default function Perfil() {
                                 <div className="flex gap-4 items-center">
                                     <div className="w-16 h-16 rounded-full border-2 border-white/30 p-0.5 bg-white/10 backdrop-blur-sm flex items-center justify-center">
                                         <div className="w-full h-full rounded-full bg-white/20 flex items-center justify-center text-white font-bold text-xl">
-                                            JS
+                                            {initials}
                                         </div>
                                     </div>
                                     <div className="flex flex-col">
-                                        <h3 className="font-bold text-xl leading-tight">João Silva</h3>
-                                        <p className="text-blue-100 text-xs font-medium opacity-90 tracking-wide mt-1">Universidade Tiradentes</p>
-                                        <p className="text-blue-100 text-xs opacity-80 mt-0.5">CPF: 123.456.789-00</p>
+                                        <h3 className="font-bold text-xl leading-tight">{user?.name ?? '—'}</h3>
+                                        <p className="text-blue-100 text-xs font-medium opacity-90 tracking-wide mt-1">{user?.institution ?? '—'}</p>
+                                        <p className="text-blue-100 text-xs opacity-80 mt-0.5">CPF: {user?.cpf ?? '—'}</p>
                                     </div>
                                 </div>
                                 <div className="w-16 h-16 bg-white rounded-lg p-1 flex items-center justify-center">
@@ -78,14 +76,13 @@ export default function Perfil() {
                             </div>
                             <div className="flex justify-between items-end mt-4">
                                 <div>
-                                    <p className="text-[10px] text-blue-200 uppercase tracking-wider mb-1">Matrícula</p>
-                                    <p className="text-lg font-mono tracking-widest font-semibold">202300158</p>
+                                    <p className="text-[10px] text-blue-200 uppercase tracking-wider mb-1">Curso</p>
+                                    <p className="text-base font-semibold tracking-wide">{user?.course ?? '—'}</p>
                                 </div>
                                 <div className="flex flex-col items-end gap-1">
                                     <span className="bg-emerald-400/20 border border-emerald-400/30 text-emerald-100 text-[10px] font-bold px-2 py-1 rounded-full backdrop-blur-md">
                                         STATUS: ATIVO
                                     </span>
-                                    <p className="text-[10px] font-medium text-white/80">Validade: 07/2026</p>
                                 </div>
                             </div>
                         </div>
@@ -105,14 +102,7 @@ export default function Perfil() {
                                         <item.icon size={20} />
                                     </div>
                                     <div className="flex flex-col items-start flex-1">
-                                        <div className="flex items-center gap-2">
-                                            <p className="text-slate-900 text-sm font-medium leading-normal">{item.label}</p>
-                                            {item.badge && (
-                                                <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded ml-1 animate-pulse">
-                                                    {item.badge}
-                                                </span>
-                                            )}
-                                        </div>
+                                        <p className="text-slate-900 text-sm font-medium leading-normal">{item.label}</p>
                                         <p className="text-slate-500 text-xs font-normal leading-normal">{item.sub}</p>
                                     </div>
                                     <ChevronRight size={20} className="text-slate-400 group-hover:text-primary transition-colors" />
@@ -125,13 +115,13 @@ export default function Perfil() {
 
                 <div className="px-4 mt-6">
                     <button
-                        onClick={() => navigate('/login')}
+                        onClick={handleLogout}
                         className="w-full flex items-center justify-center gap-2 bg-red-50 hover:bg-red-100 text-red-600 font-medium py-3 px-4 rounded-xl transition-all active:scale-95"
                     >
                         <LogOut size={20} />
                         Sair da Conta
                     </button>
-                    <p className="text-center text-slate-400 text-xs mt-6 mb-4 font-mono opacity-60">v1.0.4</p>
+                    <p className="text-center text-slate-400 text-xs mt-6 mb-4 font-mono opacity-60">v1.0.0</p>
                 </div>
             </div>
         </div>

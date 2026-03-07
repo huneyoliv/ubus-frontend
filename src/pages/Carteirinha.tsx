@@ -1,4 +1,12 @@
+import { useAuthStore } from '@/store/useAuthStore'
+
 export default function Carteirinha() {
+    const user = useAuthStore((s) => s.user)
+
+    const initials = user?.name
+        ? user.name.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase()
+        : '?'
+
     return (
         <div className="flex flex-col min-h-full bg-white">
             <div className="px-6 pt-12 pb-2">
@@ -11,10 +19,10 @@ export default function Carteirinha() {
                     <div className="bg-gradient-to-br from-cyan-500 via-[#3780f6] to-blue-700 px-6 pt-6 pb-4 flex flex-col items-center">
                         <div className="w-24 h-24 rounded-full border-3 border-white/40 bg-white/15 backdrop-blur-sm flex items-center justify-center mb-4">
                             <div className="w-full h-full rounded-full bg-white/25 flex items-center justify-center text-white font-bold text-3xl">
-                                JS
+                                {initials}
                             </div>
                         </div>
-                        <h2 className="text-white font-bold text-xl text-center">João Silva</h2>
+                        <h2 className="text-white font-bold text-xl text-center">{user?.name ?? '—'}</h2>
                     </div>
 
                     <div className="flex flex-col items-center px-6 py-6">
@@ -41,35 +49,23 @@ export default function Carteirinha() {
 
                         <div className="w-full space-y-4">
                             <div className="flex justify-between items-center py-2 border-b border-slate-100">
-                                <span className="text-xs text-slate-400 uppercase tracking-wider">Matrícula</span>
-                                <span className="text-sm font-mono font-bold text-slate-900">202300158</span>
+                                <span className="text-xs text-slate-400 uppercase tracking-wider">CPF</span>
+                                <span className="text-sm font-mono font-bold text-slate-900">{user?.cpf ?? '—'}</span>
                             </div>
                             <div className="flex justify-between items-center py-2 border-b border-slate-100">
-                                <span className="text-xs text-slate-400 uppercase tracking-wider">Linha</span>
-                                <span className="text-sm font-semibold text-slate-900">Linha 2 - UNIT</span>
-                            </div>
-                            <div className="flex justify-between items-center py-2 border-b border-slate-100">
-                                <span className="text-xs text-slate-400 uppercase tracking-wider">Turno</span>
-                                <span className="text-sm font-semibold text-slate-900">Noturno</span>
+                                <span className="text-xs text-slate-400 uppercase tracking-wider">Instituição</span>
+                                <span className="text-sm font-semibold text-slate-900">{user?.institution ?? '—'}</span>
                             </div>
                             <div className="flex justify-between items-center py-2 border-b border-slate-100">
                                 <span className="text-xs text-slate-400 uppercase tracking-wider">Curso</span>
-                                <span className="text-sm font-semibold text-slate-900">Eng. de Software</span>
+                                <span className="text-sm font-semibold text-slate-900">{user?.course ?? '—'}</span>
                             </div>
-                            <div className="flex justify-between items-center py-2 border-b border-slate-100">
-                                <span className="text-xs text-slate-400 uppercase tracking-wider">Categoria</span>
-                                <span className="text-sm font-semibold text-slate-900">Prioridade 1</span>
-                            </div>
-                            <div className="flex justify-between items-center py-2 border-b border-slate-100">
+                            <div className="flex justify-between items-center py-2">
                                 <span className="text-xs text-slate-400 uppercase tracking-wider">Status</span>
                                 <span className="inline-flex items-center gap-1.5 text-sm font-bold text-emerald-600">
                                     <span className="w-2 h-2 rounded-full bg-emerald-500" />
                                     Ativo
                                 </span>
-                            </div>
-                            <div className="flex justify-between items-center py-2">
-                                <span className="text-xs text-slate-400 uppercase tracking-wider">Validade</span>
-                                <span className="text-sm font-semibold text-slate-900">07/2026</span>
                             </div>
                         </div>
                     </div>
