@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import {
     Home, Clock, CreditCard, Wallet, User as UserIcon,
-    ShieldCheck, Bus, MapPin, LogOut, ChevronRight
+    ShieldCheck, Bus, MapPin, LogOut
 } from 'lucide-react'
 import { useAuthStore } from '@/store/useAuthStore'
 

@@ -150,9 +150,9 @@ export default function SuperAdminDashboard() {
                       <th className="px-6 py-4 text-right">Ações</th>
                     </tr>
                   </thead>
-                  <tbody className="text-sm font-medium divide-y" style={{ divideColor: 'var(--color-border)', color: 'var(--color-text)' }}>
+                  <tbody className="text-sm font-medium" style={{ color: 'var(--color-text)' }}>
                     {prefeituras.map((pref) => (
-                      <tr key={pref.name} className="hover:bg-slate-50 transition-colors group">
+                      <tr key={pref.name} className="hover:bg-slate-50 transition-colors group border-b" style={{ borderColor: 'var(--color-border)' }}>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-lg flex items-center justify-center font-bold shrink-0"
