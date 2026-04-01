@@ -13,10 +13,7 @@ import {
   Bell
 } from 'lucide-react'
 
-
 export default function SuperAdminDashboard() {
-  // const { user } = useAuthStore() // Removed if unused
-
   const kpis = [
     {
       title: 'Total de Prefeituras',
@@ -24,8 +21,9 @@ export default function SuperAdminDashboard() {
       change: '+2% este mês',
       trend: 'up',
       icon: Building2,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50 dark:bg-blue-900/20'
+      color: 'var(--color-primary)',
+      bgColor: 'rgba(37,99,235,0.08)',
+      trendColor: 'var(--color-success)'
     },
     {
       title: 'Embarques Diários (Global)',
@@ -33,8 +31,9 @@ export default function SuperAdminDashboard() {
       change: '+5.4% vs semana passada',
       trend: 'up',
       icon: Activity,
-      color: 'text-emerald-500',
-      bgColor: 'bg-emerald-50 dark:bg-emerald-900/20'
+      color: 'var(--color-success)',
+      bgColor: 'rgba(16,185,129,0.08)',
+      trendColor: 'var(--color-success)'
     },
     {
       title: 'Saúde Global da Frota',
@@ -42,8 +41,9 @@ export default function SuperAdminDashboard() {
       change: '-1.2% alertas de serviço',
       trend: 'down',
       icon: ShieldCheck,
-      color: 'text-amber-500',
-      bgColor: 'bg-amber-50 dark:bg-amber-900/20'
+      color: '#D97706',
+      bgColor: 'rgba(245,158,11,0.08)',
+      trendColor: '#EF4444'
     }
   ]
 
@@ -55,172 +55,184 @@ export default function SuperAdminDashboard() {
   ]
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-8 bg-slate-50 dark:bg-slate-950">
-      {/* Header Info (Visible on mobile dashboard) */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Console de Comando Central</h1>
-          <p className="text-slate-500 dark:text-slate-400">Visão global do ecossistema MobilitySaaS</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input 
-              type="text" 
-              placeholder="Buscar dados..." 
-              className="pl-10 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 w-full md:w-64"
-            />
+    <div className="flex flex-col min-h-full" style={{ background: 'var(--color-bg)' }}>
+      <div className="flex-1 overflow-y-auto p-5 md:p-8 max-w-[1600px] mx-auto w-full space-y-6 md:space-y-8">
+        
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-black tracking-tight" style={{ fontFamily: 'var(--font-display)', color: 'var(--color-text)' }}>
+              Console de Comando Central
+            </h1>
+            <p className="text-sm mt-1" style={{ color: 'var(--color-text-2)' }}>
+              Visão global do ecossistema MobilitySaaS
+            </p>
           </div>
-          <button className="p-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-500 relative">
-            <Bell className="w-5 h-5" />
-            <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-900"></span>
-          </button>
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            <div className="relative flex-1 md:flex-none">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--color-text-3)' }} />
+              <input 
+                type="text" 
+                placeholder="Buscar dados..." 
+                className="pl-10 pr-4 py-2.5 rounded-xl text-sm font-medium outline-none transition-all focus:ring-2 focus:ring-blue-500/20 w-full md:w-64"
+                style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }}
+              />
+            </div>
+            <button className="p-2.5 rounded-xl transition-colors relative" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-text-3)' }}>
+              <Bell size={18} />
+              <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2" style={{ borderColor: 'var(--color-surface)' }}></span>
+            </button>
+          </div>
         </div>
-      </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {kpis.map((kpi) => (
-          <div key={kpi.title} className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{kpi.title}</p>
-                <h3 className="text-3xl font-bold mt-2">{kpi.value}</h3>
+        {/* KPI Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {kpis.map((kpi) => (
+            <div key={kpi.title} className="p-6 rounded-2xl transition-all hover:-translate-y-1" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', boxShadow: '0 4px 16px -4px rgba(0,0,0,0.05)' }}>
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-[11px] font-bold uppercase tracking-wider mb-2" style={{ color: 'var(--color-text-3)' }}>{kpi.title}</p>
+                  <h3 className="text-3xl font-black" style={{ fontFamily: 'var(--font-display)', color: 'var(--color-text)' }}>{kpi.value}</h3>
+                </div>
+                <div className="p-3 rounded-xl flex items-center justify-center shrink-0" style={{ background: kpi.bgColor, color: kpi.color }}>
+                  <kpi.icon size={22} />
+                </div>
               </div>
-              <div className={`p-3 rounded-xl ${kpi.bgColor}`}>
-                <kpi.icon className={`w-6 h-6 ${kpi.color}`} />
+              <div className="mt-4 flex items-center gap-1.5 text-xs font-bold" style={{ color: kpi.trendColor }}>
+                {kpi.trend === 'up' ? <TrendingUp size={14} strokeWidth={3} /> : <TrendingDown size={14} strokeWidth={3} />}
+                <span>{kpi.change}</span>
               </div>
             </div>
-            <div className={`mt-4 flex items-center gap-1 text-sm font-medium ${kpi.trend === 'up' ? 'text-emerald-600' : 'text-rose-600'}`}>
-              {kpi.trend === 'up' ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
-              <span>{kpi.change}</span>
+          ))}
+        </div>
+
+        {/* Action Bar */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+          <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+            <h4 className="text-sm font-bold w-full sm:w-auto mb-2 sm:mb-0" style={{ color: 'var(--color-text)' }}>Ações Rápidas:</h4>
+            <button className="btn-primary px-4 h-10 flex items-center gap-2 flex-1 sm:flex-none justify-center">
+              <PlusCircle size={16} />
+              <span>Nova Prefeitura</span>
+            </button>
+            <button className="px-4 h-10 rounded-xl flex items-center justify-center gap-2 text-sm font-bold transition-all hover:bg-slate-50 flex-1 sm:flex-none"
+              style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }}>
+              <UserPlus size={16} />
+              <span>Novo Gestor</span>
+            </button>
+          </div>
+          <div className="flex items-center gap-2 w-full sm:w-auto justify-end mt-2 sm:mt-0">
+            <button className="p-2.5 rounded-xl transition-colors hover:bg-slate-100" style={{ color: 'var(--color-text-3)' }}>
+              <Filter size={18} />
+            </button>
+            <button className="p-2.5 rounded-xl transition-colors hover:bg-slate-100" style={{ color: 'var(--color-text-3)' }}>
+              <Download size={18} />
+            </button>
+          </div>
+        </div>
+
+        {/* Main Data Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Client Management Table */}
+          <div className="lg:col-span-2 space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xl font-bold" style={{ fontFamily: 'var(--font-display)', color: 'var(--color-text)' }}>Prefeituras Ativas</h3>
+              <button className="text-sm font-bold hover:underline transition-all" style={{ color: 'var(--color-primary)' }}>Ver Todas</button>
             </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Action Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
-        <div className="flex items-center gap-3">
-          <h4 className="font-semibold text-slate-700 dark:text-slate-300">Ações Rápidas:</h4>
-          <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-lg hover:bg-blue-700 transition-all shadow-md shadow-blue-600/20">
-            <PlusCircle className="w-4 h-4" />
-            <span>Nova Prefeitura</span>
-          </button>
-          <button className="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-bold rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">
-            <UserPlus className="w-4 h-4" />
-            <span>Novo Gestor</span>
-          </button>
-        </div>
-        <div className="flex items-center gap-2">
-          <button className="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-            <Filter className="w-5 h-5" />
-          </button>
-          <button className="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-            <Download className="w-5 h-5" />
-          </button>
-        </div>
-      </div>
-
-      {/* Main Data Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Client Management Table */}
-        <div className="lg:col-span-2 space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-bold">Prefeituras Ativas</h3>
-            <button className="text-blue-600 dark:text-blue-400 text-sm font-bold hover:underline">Ver Todas</button>
-          </div>
-          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse min-w-[600px]">
-                <thead>
-                  <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 text-xs uppercase font-bold text-slate-500 tracking-wider">
-                    <th className="px-6 py-4">Prefeitura</th>
-                    <th className="px-6 py-4">Status</th>
-                    <th className="px-6 py-4">Rotas</th>
-                    <th className="px-6 py-4">Motoristas</th>
-                    <th className="px-6 py-4 text-right">Ações</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                  {prefeituras.map((pref) => (
-                    <tr key={pref.name} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors group">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-blue-600/10 flex items-center justify-center text-blue-600 font-bold border border-blue-600/20">
-                            {pref.initial}
-                          </div>
-                          <span className="font-semibold">{pref.name}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold ${
-                          pref.status === 'Active' 
-                            ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400' 
-                            : 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-400'
-                        }`}>
-                          <span className={`w-1.5 h-1.5 rounded-full ${pref.status === 'Active' ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
-                          {pref.status === 'Active' ? 'Ativo' : 'Suspenso'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">{pref.routes}</td>
-                      <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">{pref.drivers}</td>
-                      <td className="px-6 py-4 text-right">
-                        <button className="text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                          <Edit3 className="w-4 h-4" />
-                        </button>
-                      </td>
+            <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse min-w-[600px]">
+                  <thead>
+                    <tr className="text-[11px] font-bold uppercase tracking-wider" style={{ background: 'rgba(37,99,235,0.03)', color: 'var(--color-text-3)' }}>
+                      <th className="px-6 py-4">Prefeitura</th>
+                      <th className="px-6 py-4">Status</th>
+                      <th className="px-6 py-4">Rotas</th>
+                      <th className="px-6 py-4">Motoristas</th>
+                      <th className="px-6 py-4 text-right">Ações</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="text-sm font-medium divide-y" style={{ divideColor: 'var(--color-border)', color: 'var(--color-text)' }}>
+                    {prefeituras.map((pref) => (
+                      <tr key={pref.name} className="hover:bg-slate-50 transition-colors group">
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg flex items-center justify-center font-bold shrink-0"
+                              style={{ background: 'rgba(37,99,235,0.08)', color: 'var(--color-primary)', border: '1px solid rgba(37,99,235,0.1)' }}>
+                              {pref.initial}
+                            </div>
+                            <span className="font-bold">{pref.name}</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                            pref.status === 'Active' 
+                              ? 'bg-emerald-100/50 text-emerald-700' 
+                              : 'bg-rose-100/50 text-rose-700'
+                          }`}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${pref.status === 'Active' ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
+                            {pref.status === 'Active' ? 'Ativo' : 'Suspenso'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 font-semibold" style={{ color: 'var(--color-text-2)' }}>{pref.routes}</td>
+                        <td className="px-6 py-4 font-semibold" style={{ color: 'var(--color-text-2)' }}>{pref.drivers}</td>
+                        <td className="px-6 py-4 text-right">
+                          <button className="p-2 -mr-2 rounded-lg transition-colors hover:bg-slate-100" style={{ color: 'var(--color-text-3)' }}>
+                            <Edit3 size={16} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Side Form: Register New Municipality */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-2">
-            <PlusCircle className="w-5 h-5 text-blue-600" />
-            <h3 className="text-lg font-bold">Nova Prefeitura</h3>
-          </div>
-          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
-            <form className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Cidade</label>
-                <input 
-                  type="text" 
-                  placeholder="Ex: Florianópolis" 
-                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Estado</label>
-                <select className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all">
-                  <option value="">Selecione...</option>
-                  <option value="SE">Sergipe</option>
-                  <option value="SP">São Paulo</option>
-                  <option value="PR">Paraná</option>
-                  <option value="SC">Santa Catarina</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Gestor Principal</label>
-                <input 
-                  type="text" 
-                  placeholder="Nome do gestor" 
-                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                />
-              </div>
-              <div className="pt-2">
-                <button 
-                  type="button"
-                  className="w-full py-3 bg-blue-600 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-all"
-                >
-                  Implantar Infraestrutura
-                </button>
-              </div>
-            </form>
+          {/* Side Form: Register New Municipality */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <PlusCircle size={20} style={{ color: 'var(--color-primary)' }} />
+              <h3 className="text-xl font-bold" style={{ fontFamily: 'var(--font-display)', color: 'var(--color-text)' }}>Nova Prefeitura</h3>
+            </div>
+            <div className="p-6 rounded-2xl" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+              <form className="space-y-4 flex flex-col gap-2">
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider mb-1.5" style={{ color: 'var(--color-text-3)' }}>Cidade</label>
+                  <input 
+                    type="text" 
+                    placeholder="Ex: Florianópolis" 
+                    className="w-full px-4 py-3 rounded-xl text-sm font-medium outline-none transition-all focus:ring-2 focus:ring-blue-500/20"
+                    style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }}
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider mb-1.5" style={{ color: 'var(--color-text-3)' }}>Estado</label>
+                  <select 
+                    className="w-full px-4 py-3 rounded-xl text-sm font-medium outline-none transition-all focus:ring-2 focus:ring-blue-500/20"
+                    style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }}
+                  >
+                    <option value="">Selecione...</option>
+                    <option value="SE">Sergipe</option>
+                    <option value="SP">São Paulo</option>
+                    <option value="PR">Paraná</option>
+                    <option value="SC">Santa Catarina</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider mb-1.5" style={{ color: 'var(--color-text-3)' }}>Gestor Principal</label>
+                  <input 
+                    type="text" 
+                    placeholder="Nome do gestor" 
+                    className="w-full px-4 py-3 rounded-xl text-sm font-medium outline-none transition-all focus:ring-2 focus:ring-blue-500/20"
+                    style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }}
+                  />
+                </div>
+                <div className="pt-3">
+                  <button type="button" className="btn-primary w-full shadow-lg shadow-blue-600/20">
+                    Implantar Infraestrutura
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </div>

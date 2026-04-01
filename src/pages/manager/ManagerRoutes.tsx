@@ -50,135 +50,160 @@ export default function ManagerRoutes() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-full">
-                <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+            <div className="flex items-center justify-center min-h-full" style={{ background: 'var(--color-bg)' }}>
+                <Loader2 className="w-8 h-8 animate-spin" style={{ color: 'var(--color-primary)' }} />
             </div>
         )
     }
 
     return (
-        <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-full">
-            <div className="flex items-center p-4 pb-2 justify-between bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shrink-0">
-                <h2 className="text-xl font-bold leading-tight flex-1">Gestão de Rotas</h2>
+        <div className="flex flex-col min-h-full" style={{ background: 'var(--color-bg)' }}>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 md:p-8 max-w-[1600px] mx-auto w-full pb-0 shrink-0">
+                <div>
+                    <h1 className="text-2xl font-black" style={{ fontFamily: 'var(--font-display)', color: 'var(--color-text)' }}>
+                        Gestão de Rotas
+                    </h1>
+                    <p className="text-sm mt-1" style={{ color: 'var(--color-text-2)' }}>
+                        Gerencie trajetos e horários disponíveis.
+                    </p>
+                </div>
                 <div className="flex items-center gap-3">
                     <div className="relative hidden md:block">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--color-text-3)' }} />
                         <input
-                            className="pl-9 pr-4 py-1.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-sm focus:ring-blue-600 outline-none w-64"
+                            className="pl-10 pr-4 py-2.5 rounded-xl text-sm font-medium outline-none sm:w-64 transition-all"
+                            style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }}
                             placeholder="Buscar rota..."
                             type="text"
                         />
                     </div>
                     <button
                         onClick={() => setShowAddModal(true)}
-                        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-lg text-sm font-medium transition-colors"
+                        className="btn-primary w-full sm:w-auto px-5 h-10 flex items-center justify-center gap-2"
+                        style={{ padding: '0 1.25rem', height: '2.5rem' }}
                     >
-                        <Plus className="w-4 h-4" />
-                        Nova Rota
+                        <Plus size={16} /> Nova Rota
                     </button>
                 </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 md:p-8">
-                <div className="max-w-[1600px] mx-auto w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
+            <div className="flex-1 overflow-y-auto p-5 md:p-8 pt-6">
+                <div className="max-w-[1600px] mx-auto w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                     {routes.map((route) => (
-                        <div key={route.id} className="bg-white dark:bg-slate-900 rounded-xl p-4 md:p-6 shadow-sm border border-slate-200 dark:border-slate-800">
-                            <div className="flex items-start gap-4 mb-4">
-                                <div className="w-12 h-12 rounded-full bg-blue-600/10 flex items-center justify-center shrink-0">
-                                    <Bus className="text-blue-600 w-6 h-6" />
+                        <div key={route.id} className="rounded-2xl p-6 transition-all hover:-translate-y-1 flex flex-col h-full"
+                            style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', boxShadow: '0 4px 16px -4px rgba(37,99,235,0.05)' }}>
+                            <div className="flex items-start gap-4 mb-5 flex-1">
+                                <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+                                    style={{ background: 'rgba(37,99,235,0.08)', color: 'var(--color-primary)' }}>
+                                    <Bus size={22} />
                                 </div>
-                                <div className="flex-1">
-                                    <h3 className="font-semibold text-lg">{route.nome}</h3>
-                                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 line-clamp-1">{route.descricao || 'Sem descrição'}</p>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4 text-xs text-slate-600 dark:text-slate-400 mb-5 bg-slate-50 dark:bg-slate-950 p-3 rounded-lg border border-slate-100 dark:border-slate-800/50">
-                                <div className="flex items-center gap-2">
-                                    <Clock className="w-3 h-3" />
-                                    <span>Votação: {route.horarioAberturaVotacao} - {route.horarioFechamentoVotacao}</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Calendar className="w-3 h-3" />
-                                    <span>{route.diasDaSemana?.length} dias/semana</span>
+                                <div className="flex-1 min-w-0">
+                                    <h3 className="font-bold text-lg truncate" style={{ color: 'var(--color-text)' }}>{route.nome}</h3>
+                                    <p className="text-sm line-clamp-2 mt-0.5" style={{ color: 'var(--color-text-2)' }}>
+                                        {route.descricao || 'Nenhuma descrição fornecida.'}
+                                    </p>
                                 </div>
                             </div>
 
-                            <button className="w-full flex items-center justify-center gap-2 rounded-lg h-10 bg-blue-600/10 text-blue-600 hover:bg-blue-600/20 font-medium transition-colors text-sm">
-                                <Map className="w-4 h-4" />
-                                Detalhes e Mapa
+                            <div className="grid grid-cols-2 gap-3 mb-6 p-3 rounded-xl"
+                                style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)' }}>
+                                <div className="flex flex-col gap-1">
+                                    <div className="flex items-center gap-1.5" style={{ color: 'var(--color-text-3)' }}>
+                                        <Clock size={12} /> <span className="text-[10px] uppercase font-bold tracking-wider">Votação</span>
+                                    </div>
+                                    <span className="text-xs font-semibold" style={{ color: 'var(--color-text)' }}>
+                                        {route.horarioAberturaVotacao} às {route.horarioFechamentoVotacao}
+                                    </span>
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                    <div className="flex items-center gap-1.5" style={{ color: 'var(--color-text-3)' }}>
+                                        <Calendar size={12} /> <span className="text-[10px] uppercase font-bold tracking-wider">Frequência</span>
+                                    </div>
+                                    <span className="text-xs font-semibold flex items-center gap-2" style={{ color: 'var(--color-text)' }}>
+                                        {route.diasDaSemana?.length || 0} dias/semana
+                                    </span>
+                                </div>
+                            </div>
+
+                            <button className="w-full font-bold text-sm h-11 rounded-xl flex items-center justify-center gap-2 transition-all"
+                                style={{ background: 'rgba(37,99,235,0.08)', color: 'var(--color-primary)', border: '1px solid rgba(37,99,235,0.1)' }}>
+                                <Map size={16} /> Detalhes e Mapa
                             </button>
                         </div>
                     ))}
 
                     {routes.length === 0 && (
-                        <div className="col-span-full py-20 text-center">
-                            <p className="text-slate-500">Nenhuma rota cadastrada para este município.</p>
+                        <div className="col-span-full py-20 text-center rounded-2xl border-2 border-dashed"
+                            style={{ borderColor: 'var(--color-border)' }}>
+                            <Bus size={32} className="mx-auto mb-3" style={{ color: 'var(--color-text-3)' }} />
+                            <p className="text-sm font-semibold" style={{ color: 'var(--color-text-2)' }}>Nenhuma rota cadastrada.</p>
+                            <p className="text-xs mt-1" style={{ color: 'var(--color-text-3)' }}>Clique em "Nova Rota" para adicionar a primeira.</p>
                         </div>
                     )}
                 </div>
             </div>
 
-            {/* Add Modal */}
+            {/* Modal de Nova Rota */}
             {showAddModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-                    <div className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800">
-                        <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
-                            <h3 className="font-bold text-lg">Nova Rota</h3>
-                            <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-slate-600">
-                                <X className="w-5 h-5" />
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+                    <div className="rounded-3xl w-full max-w-md overflow-hidden transform transition-all"
+                        style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', boxShadow: '0 20px 40px -10px rgba(0,0,0,0.1)' }}>
+                        <div className="px-6 py-4 flex justify-between items-center border-b" style={{ borderColor: 'var(--color-border)' }}>
+                            <h3 className="font-bold text-lg" style={{ fontFamily: 'var(--font-display)', color: 'var(--color-text)' }}>Nova Rota</h3>
+                            <button onClick={() => setShowAddModal(false)} className="p-2 rounded-xl transition-colors hover:bg-slate-100" style={{ color: 'var(--color-text-3)' }}>
+                                <X size={20} />
                             </button>
                         </div>
-                        <form onSubmit={handleAddRoute} className="p-6 space-y-4">
+                        <form onSubmit={handleAddRoute} className="p-6 flex flex-col gap-4">
                             <div>
-                                <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Nome da Linha</label>
+                                <label className="block text-xs font-bold uppercase tracking-wider mb-1.5" style={{ color: 'var(--color-text-3)' }}>Nome da Linha</label>
                                 <input
                                     type="text"
                                     value={newRoute.nome}
                                     onChange={(e) => setNewRoute({ ...newRoute, nome: e.target.value })}
-                                    className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus:ring-2 focus:ring-blue-600 outline-none transition-all"
+                                    className="w-full px-4 py-3 rounded-xl text-sm font-medium outline-none transition-all focus:ring-2 focus:ring-blue-500/20"
+                                    style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }}
                                     placeholder="Ex: Universitária - Noite"
                                     required
                                 />
                             </div>
                             <div>
-                                <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Descrição</label>
+                                <label className="block text-xs font-bold uppercase tracking-wider mb-1.5" style={{ color: 'var(--color-text-3)' }}>Descrição</label>
                                 <textarea
                                     value={newRoute.descricao}
                                     onChange={(e) => setNewRoute({ ...newRoute, descricao: e.target.value })}
-                                    className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus:ring-2 focus:ring-blue-600 outline-none transition-all resize-none"
+                                    className="w-full px-4 py-3 rounded-xl text-sm font-medium outline-none transition-all focus:ring-2 focus:ring-blue-500/20 resize-none"
+                                    style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }}
                                     placeholder="Detalhes do trajeto..."
                                     rows={2}
                                 />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Abre Votação</label>
+                                    <label className="block text-xs font-bold uppercase tracking-wider mb-1.5" style={{ color: 'var(--color-text-3)' }}>Abre Votação</label>
                                     <input
                                         type="time"
                                         value={newRoute.horarioAberturaVotacao}
                                         onChange={(e) => setNewRoute({ ...newRoute, horarioAberturaVotacao: e.target.value })}
-                                        className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-medium"
+                                        className="w-full px-4 py-3 rounded-xl text-sm font-medium outline-none transition-all focus:ring-2 focus:ring-blue-500/20"
+                                        style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }}
                                         required
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Fecha Votação</label>
+                                    <label className="block text-xs font-bold uppercase tracking-wider mb-1.5" style={{ color: 'var(--color-text-3)' }}>Fecha Votação</label>
                                     <input
                                         type="time"
                                         value={newRoute.horarioFechamentoVotacao}
                                         onChange={(e) => setNewRoute({ ...newRoute, horarioFechamentoVotacao: e.target.value })}
-                                        className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-medium"
+                                        className="w-full px-4 py-3 rounded-xl text-sm font-medium outline-none transition-all focus:ring-2 focus:ring-blue-500/20"
+                                        style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }}
                                         required
                                     />
                                 </div>
                             </div>
-                            <button
-                                type="submit"
-                                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-600/20 transition-all flex items-center justify-center gap-2 mt-2"
-                            >
-                                <Plus className="w-5 h-5" />
-                                Cadastrar Rota
+                            <button type="submit" className="btn-primary mt-2 flex items-center justify-center gap-2">
+                                <Plus size={18} /> Cadastrar Rota
                             </button>
                         </form>
                     </div>
