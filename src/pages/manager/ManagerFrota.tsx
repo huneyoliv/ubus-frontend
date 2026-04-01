@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Bus, Plus, Loader2, X, Info, Zap } from 'lucide-react'
+import { Bus, Plus, Loader2, X, Info, Zap, Settings, CreditCard } from 'lucide-react'
 import { api } from '@/lib/api'
 
 export default function ManagerFrota() {
@@ -50,139 +50,171 @@ export default function ManagerFrota() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-full">
-                <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+            <div className="flex items-center justify-center min-h-full" style={{ background: 'var(--color-bg)' }}>
+                <Loader2 className="w-8 h-8 animate-spin" style={{ color: 'var(--color-primary)' }} />
             </div>
         )
     }
 
     return (
-        <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-full">
-            <div className="flex items-center p-4 pb-2 justify-between bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shrink-0">
-                <h2 className="text-xl font-bold leading-tight flex-1">Gestão de Frota</h2>
+        <div className="flex flex-col min-h-full" style={{ background: 'var(--color-bg)' }}>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 md:p-8 max-w-[1600px] mx-auto w-full pb-0 shrink-0">
+                <div>
+                    <h1 className="text-2xl font-black" style={{ fontFamily: 'var(--font-display)', color: 'var(--color-text)' }}>
+                        Gestão de Frota
+                    </h1>
+                    <p className="text-sm mt-1" style={{ color: 'var(--color-text-2)' }}>
+                        Controle os veículos disponíveis para operação.
+                    </p>
+                </div>
                 <button
                     onClick={() => setShowAddModal(true)}
-                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-lg text-sm font-medium transition-colors"
+                    className="btn-primary w-full sm:w-auto px-5 h-10 flex items-center justify-center gap-2"
+                    style={{ padding: '0 1.25rem', height: '2.5rem' }}
                 >
-                    <Plus className="w-4 h-4" />
-                    Novo Veículo
+                    <Plus size={16} /> Novo Veículo
                 </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 md:p-8">
-                <div className="max-w-[1600px] mx-auto w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+            <div className="flex-1 overflow-y-auto p-5 md:p-8 pt-6">
+                <div className="max-w-[1600px] mx-auto w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {buses.map((bus) => (
-                        <div key={bus.id} className="bg-white dark:bg-slate-900 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm relative group">
-                            <div className="h-2 bg-blue-600 w-full" />
+                        <div key={bus.id} className="rounded-2xl overflow-hidden shadow-sm transition-all hover:-translate-y-1 bg-white relative group"
+                            style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', boxShadow: '0 4px 16px -4px rgba(37,99,235,0.05)' }}>
+                            <div className="h-1.5 w-full" style={{ background: bus.active !== false ? 'var(--color-success)' : 'var(--color-text-3)' }} />
                             <div className="p-5">
-                                <div className="flex justify-between items-start mb-4">
-                                    <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex items-center justify-center text-blue-600">
-                                        <Bus className="w-6 h-6" />
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                                        style={{ background: 'rgba(37,99,235,0.08)', color: 'var(--color-primary)' }}>
+                                        <Bus size={20} />
                                     </div>
-                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${bus.active !== false ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-800'}`}>
+                                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                                        style={{
+                                            background: bus.active !== false ? 'rgba(16,185,129,0.1)' : 'rgba(100,116,139,0.1)',
+                                            color: bus.active !== false ? 'var(--color-success)' : 'var(--color-text-3)'
+                                        }}>
                                         {bus.active !== false ? 'ATIVO' : 'INATIVO'}
                                     </span>
                                 </div>
-                                <h3 className="text-xl font-bold mb-1">Prefixo {bus.numeroIdentificacao}</h3>
-                                <p className="text-sm text-slate-500 mb-4 font-mono">{bus.placa}</p>
+                                <h3 className="text-lg font-bold" style={{ color: 'var(--color-text)' }}>Prefixo {bus.numeroIdentificacao}</h3>
+                                <div className="flex items-center gap-1.5 mt-1 mb-5">
+                                    <CreditCard size={14} style={{ color: 'var(--color-text-3)' }} />
+                                    <p className="text-sm font-semibold tracking-wider font-mono" style={{ color: 'var(--color-text-2)' }}>{bus.placa}</p>
+                                </div>
 
-                                <div className="grid grid-cols-2 gap-2 mb-4">
-                                    <div className="bg-slate-50 dark:bg-slate-950 p-2 rounded-lg border border-slate-100 dark:border-slate-800 text-center">
-                                        <p className="text-[10px] text-slate-400 uppercase font-semibold">Assentos</p>
-                                        <p className="text-lg font-bold text-blue-600">{bus.capacidadePadrao}</p>
+                                <div className="grid grid-cols-2 gap-3 mb-5">
+                                    <div className="p-2 rounded-xl text-center" style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)' }}>
+                                        <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-3)' }}>Lotação</p>
+                                        <p className="text-lg font-black" style={{ color: 'var(--color-text)' }}>{bus.capacidadePadrao}</p>
                                     </div>
-                                    <div className="bg-slate-50 dark:bg-slate-950 p-2 rounded-lg border border-slate-100 dark:border-slate-800 flex flex-col items-center justify-center gap-1">
-                                        {bus.temArCondicionado && <span title="Ar Condicionado"><Zap className="w-3 h-3 text-amber-500" /></span>}
-                                        {bus.temBanheiro && <span title="Banheiro"><Info className="w-3 h-3 text-blue-500" /></span>}
-                                        <p className="text-[10px] text-slate-400 font-medium">Extra</p>
+                                    <div className="p-2 rounded-xl flex flex-col items-center justify-center gap-1.5" style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)' }}>
+                                        <div className="flex gap-2">
+                                            {bus.temArCondicionado && <Zap size={15} style={{ color: '#D97706' }} title="Ar Condicionado" />}
+                                            {bus.temBanheiro && <Info size={15} style={{ color: 'var(--color-primary)' }} title="Banheiro" />}
+                                        </div>
+                                        <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-3)' }}>Extras</p>
                                     </div>
                                 </div>
                                 
-                                <button className="w-full text-xs font-semibold py-2 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors uppercase tracking-wider">
-                                    Gerenciar Veículo
+                                <button className="w-full font-bold text-sm h-11 rounded-xl flex items-center justify-center gap-2 transition-all hover:bg-slate-50"
+                                    style={{ border: '1px solid var(--color-border)', color: 'var(--color-text)' }}>
+                                    <Settings size={16} /> Gerenciar
                                 </button>
                             </div>
                         </div>
                     ))}
 
                     {buses.length === 0 && (
-                        <div className="col-span-full py-20 text-center">
-                            <p className="text-slate-500">Nenhum veículo cadastrado na frota municipal.</p>
+                        <div className="col-span-full py-20 text-center rounded-2xl border-2 border-dashed"
+                            style={{ borderColor: 'var(--color-border)' }}>
+                            <Bus size={32} className="mx-auto mb-3" style={{ color: 'var(--color-text-3)' }} />
+                            <p className="text-sm font-semibold" style={{ color: 'var(--color-text-2)' }}>Nenhum veículo cadastrado.</p>
                         </div>
                     )}
                 </div>
             </div>
 
-            {/* Modal */}
+            {/* Modal de Novo Veículo */}
             {showAddModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-                    <div className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-md shadow-2xl border border-slate-200 dark:border-slate-800">
-                        <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
-                            <h3 className="font-bold text-lg">Novo Veículo</h3>
-                            <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-slate-600">
-                                <X className="w-5 h-5" />
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+                    <div className="rounded-3xl w-full max-w-md overflow-hidden transform transition-all"
+                        style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', boxShadow: '0 20px 40px -10px rgba(0,0,0,0.1)' }}>
+                        <div className="px-6 py-4 flex justify-between items-center border-b" style={{ borderColor: 'var(--color-border)' }}>
+                            <h3 className="font-bold text-lg" style={{ fontFamily: 'var(--font-display)', color: 'var(--color-text)' }}>Novo Veículo</h3>
+                            <button onClick={() => setShowAddModal(false)} className="p-2 rounded-xl transition-colors hover:bg-slate-100" style={{ color: 'var(--color-text-3)' }}>
+                                <X size={20} />
                             </button>
                         </div>
-                        <form onSubmit={handleAddBus} className="p-6 space-y-4">
+                        <form onSubmit={handleAddBus} className="p-6 flex flex-col gap-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Prefixo</label>
+                                    <label className="block text-xs font-bold uppercase tracking-wider mb-1.5" style={{ color: 'var(--color-text-3)' }}>Prefixo</label>
                                     <input
                                         type="text"
                                         value={newBus.numeroIdentificacao}
                                         onChange={(e) => setNewBus({ ...newBus, numeroIdentificacao: e.target.value })}
-                                        className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm py-2 px-3 border border-slate-200 outline-none"
+                                        className="w-full px-4 py-3 rounded-xl text-sm font-medium outline-none transition-all focus:ring-2 focus:ring-blue-500/20"
+                                        style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }}
                                         placeholder="Ex: 20120"
                                         required
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Placa</label>
+                                    <label className="block text-xs font-bold uppercase tracking-wider mb-1.5" style={{ color: 'var(--color-text-3)' }}>Placa</label>
                                     <input
                                         type="text"
                                         value={newBus.placa}
                                         onChange={(e) => setNewBus({ ...newBus, placa: e.target.value })}
-                                        className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm font-mono py-2 px-3 border border-slate-200 outline-none"
+                                        className="w-full px-4 py-3 rounded-xl text-sm font-medium font-mono uppercase outline-none transition-all focus:ring-2 focus:ring-blue-500/20"
+                                        style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }}
                                         placeholder="ABC-1234"
                                         required
                                     />
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Capacidade de Assentos</label>
+                                <label className="block text-xs font-bold uppercase tracking-wider mb-1.5" style={{ color: 'var(--color-text-3)' }}>Assentos (Capacidade)</label>
                                 <input
                                     type="number"
                                     value={newBus.capacidadePadrao}
                                     onChange={(e) => setNewBus({ ...newBus, capacidadePadrao: Number(e.target.value) })}
-                                    className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm py-2 px-3 border border-slate-200 outline-none"
+                                    className="w-full px-4 py-3 rounded-xl text-sm font-medium outline-none transition-all focus:ring-2 focus:ring-blue-500/20"
+                                    style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }}
                                     required
                                 />
                             </div>
-                            <div className="flex gap-4 py-2">
+                            <div className="flex gap-6 py-2">
                                 <label className="flex items-center gap-2 cursor-pointer group">
-                                    <input
-                                        type="checkbox"
-                                        checked={newBus.temArCondicionado}
-                                        onChange={(e) => setNewBus({ ...newBus, temArCondicionado: e.target.checked })}
-                                        className="w-4 h-4 rounded text-blue-600 focus:ring-blue-600 border-slate-300 dark:border-slate-700"
-                                    />
-                                    <span className="text-sm text-slate-700 dark:text-slate-300 group-hover:text-blue-600 transition-colors">Ar Condicionado</span>
+                                    <div className="relative flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            checked={newBus.temArCondicionado}
+                                            onChange={(e) => setNewBus({ ...newBus, temArCondicionado: e.target.checked })}
+                                            className="peer w-5 h-5 opacity-0 absolute cursor-pointer"
+                                        />
+                                        <div className="w-5 h-5 rounded border-2 flex items-center justify-center transition-all peer-checked:bg-blue-600 peer-checked:border-blue-600" style={{ borderColor: 'var(--color-border)' }}>
+                                            {newBus.temArCondicionado && <svg className="w-3 h-3 text-white" viewBox="0 0 14 10" fill="none"><path d="M1 5L4.5 8.5L13 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                                        </div>
+                                    </div>
+                                    <span className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>Ar Condicionado</span>
                                 </label>
                                 <label className="flex items-center gap-2 cursor-pointer group">
-                                    <input
-                                        type="checkbox"
-                                        checked={newBus.temBanheiro}
-                                        onChange={(e) => setNewBus({ ...newBus, temBanheiro: e.target.checked })}
-                                        className="w-4 h-4 rounded text-blue-600 focus:ring-blue-600 border-slate-300 dark:border-slate-700"
-                                    />
-                                    <span className="text-sm text-slate-700 dark:text-slate-300 group-hover:text-blue-600 transition-colors">Banheiro</span>
+                                    <div className="relative flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            checked={newBus.temBanheiro}
+                                            onChange={(e) => setNewBus({ ...newBus, temBanheiro: e.target.checked })}
+                                            className="peer w-5 h-5 opacity-0 absolute cursor-pointer"
+                                        />
+                                        <div className="w-5 h-5 rounded border-2 flex items-center justify-center transition-all peer-checked:bg-blue-600 peer-checked:border-blue-600" style={{ borderColor: 'var(--color-border)' }}>
+                                            {newBus.temBanheiro && <svg className="w-3 h-3 text-white" viewBox="0 0 14 10" fill="none"><path d="M1 5L4.5 8.5L13 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                                        </div>
+                                    </div>
+                                    <span className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>Banheiro</span>
                                 </label>
                             </div>
-                            <button
-                                type="submit"
-                                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-blue-600/20"
-                            >
-                                Adicionar Veículo
+                            <button type="submit" className="btn-primary mt-2 w-full flex items-center justify-center gap-2">
+                                <Plus size={18} /> Cadastrar Veículo
                             </button>
                         </form>
                     </div>
