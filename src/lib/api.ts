@@ -1,4 +1,4 @@
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://129.80.98.178/api'
+const BASE_URL = import.meta.env.VITE_API_URL || 'https://api.ubus.me/api'
 
 function getToken(): string | null {
     try {

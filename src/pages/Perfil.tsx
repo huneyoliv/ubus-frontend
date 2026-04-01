@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, User, Lock, FileText, Shield, ChevronRight, LogOut } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { User, Lock, FileText, Shield, ChevronRight, LogOut, Settings } from 'lucide-react'
 import { useAuthStore } from '@/store/useAuthStore'
 
 export default function Perfil() {
@@ -11,10 +12,10 @@ export default function Perfil() {
         : '?'
 
     const menuItems = [
-        { icon: User, label: 'Meus Dados Pessoais', sub: 'Nome, CPF, Telefone', color: 'bg-primary/10 text-primary', route: '/meus-dados' },
-        { icon: Lock, label: 'Alterar Senha', sub: 'Segurança da conta', color: 'bg-primary/10 text-primary', route: '/alterar-senha' },
-        { icon: FileText, label: 'Renovar Semestre', sub: 'Documentação necessária', color: 'bg-orange-100 text-orange-600', route: '/renovar-semestre' },
-        { icon: Shield, label: 'Regras e Penalidades', sub: 'Advertências e penalidades', color: 'bg-primary/10 text-primary', route: '/regras' },
+        { icon: User, label: 'Meus Dados Pessoais', sub: 'Nome, CPF, Telefone', route: '/meus-dados', color: 'var(--color-primary)', bg: 'rgba(37,99,235,0.08)' },
+        { icon: Lock, label: 'Alterar Senha', sub: 'Segurança da conta', route: '/alterar-senha', color: 'var(--color-primary)', bg: 'rgba(37,99,235,0.08)' },
+        { icon: FileText, label: 'Renovar Semestre', sub: 'Documentação necessária', route: '/renovar-semestre', color: '#D97706', bg: 'rgba(245,158,11,0.1)' },
+        { icon: Shield, label: 'Regras e Penalidades', sub: 'Advertências e condutas', route: '/regras', color: 'var(--color-secondary)', bg: 'rgba(124,58,237,0.08)' },
     ]
 
     const handleLogout = () => {
@@ -22,107 +23,106 @@ export default function Perfil() {
         navigate('/login')
     }
 
+    const roleLabel: Record<string, string> = {
+        ALUNO: 'Estudante',
+        LIDER: 'Líder de Turma',
+        CARONISTA: 'Caronista',
+        MOTORISTA: 'Motorista',
+        GESTOR: 'Gestor',
+        SUPER_ADMIN: 'Super Admin',
+    }
+
     return (
-        <div className="flex flex-col min-h-full bg-white">
-            <div className="flex items-center px-4 py-4 pt-12 pb-2 justify-between sticky top-0 bg-white z-10">
-                <button
-                    onClick={() => navigate('/dashboard')}
-                    className="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-slate-100 transition-colors text-slate-900"
-                >
-                    <ArrowLeft size={24} />
-                </button>
-                <h2 className="text-slate-900 text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-10">
-                    Meu Perfil
-                </h2>
+        <div className="flex flex-col min-h-full">
+            <div className="px-5 pt-8 pb-5">
+                <h1 className="text-2xl font-black mb-1" style={{ fontFamily: 'var(--font-display)', color: 'var(--color-text)' }}>
+                    Perfil
+                </h1>
+                <p className="text-sm" style={{ color: 'var(--color-text-2)' }}>Gerencie sua conta</p>
             </div>
 
-            <div className="flex-1 overflow-y-auto pb-4">
-                <div className="p-4 w-full">
-                    <div className="relative w-full aspect-[1.586/1] rounded-xl shadow-[0_20px_40px_-15px_rgba(55,128,246,0.3)] overflow-hidden text-white group transition-transform duration-500 hover:scale-[1.02]">
-                        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500 via-primary to-blue-700" />
-                        <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl" />
-                        <div className="absolute bottom-10 left-10 w-24 h-24 bg-white/10 rounded-full blur-xl" />
-                        <div className="relative h-full flex flex-col justify-between p-5 z-10">
-                            <div className="flex justify-between items-start">
-                                <div className="flex gap-4 items-center">
-                                    <div className="w-16 h-16 rounded-full border-2 border-white/30 p-0.5 bg-white/10 backdrop-blur-sm flex items-center justify-center">
-                                        <div className="w-full h-full rounded-full bg-white/20 flex items-center justify-center text-white font-bold text-xl">
-                                            {initials}
-                                        </div>
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <h3 className="font-bold text-xl leading-tight">{user?.name ?? '—'}</h3>
-                                        <p className="text-blue-100 text-xs font-medium opacity-90 tracking-wide mt-1">{user?.email ?? '—'}</p>
-                                        <p className="text-blue-100 text-xs opacity-80 mt-0.5">CPF: {user?.cpf ?? '—'}</p>
-                                    </div>
-                                </div>
-                                <div className="w-16 h-16 bg-white rounded-lg p-1 flex items-center justify-center">
-                                    <svg viewBox="0 0 100 100" className="w-full h-full">
-                                        {Array.from({ length: 10 }).map((_, row) =>
-                                            Array.from({ length: 10 }).map((_, col) => (
-                                                <rect
-                                                    key={`${row}-${col}`}
-                                                    x={col * 10}
-                                                    y={row * 10}
-                                                    width="8"
-                                                    height="8"
-                                                    rx="1"
-                                                    fill={(row + col) % 3 === 0 ? '#1e293b' : ((row * col) % 5 < 2 ? '#1e293b' : 'transparent')}
-                                                />
-                                            ))
-                                        )}
-                                    </svg>
-                                </div>
-                            </div>
-                            <div className="flex justify-between items-end mt-4">
-                                <div>
-                                    <p className="text-[10px] text-blue-200 uppercase tracking-wider mb-1">Função</p>
-                                    <p className="text-base font-semibold tracking-wide">{user?.role ?? '—'}</p>
-                                </div>
-                                <div className="flex flex-col items-end gap-1">
-                                    <span className="bg-emerald-400/20 border border-emerald-400/30 text-emerald-100 text-[10px] font-bold px-2 py-1 rounded-full backdrop-blur-md">
-                                        STATUS: ATIVO
-                                    </span>
-                                </div>
-                            </div>
+            <div className="px-5 mb-5">
+                <motion.div
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="relative overflow-hidden rounded-2xl p-5"
+                    style={{
+                        background: 'linear-gradient(135deg, #1E3A8A 0%, #2563EB 50%, #7C3AED 100%)',
+                        boxShadow: '0 12px 40px -12px rgba(37,99,235,0.4)',
+                    }}
+                >
+                    <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full opacity-15 bg-white blur-2xl" />
+                    <div className="absolute bottom-0 left-10 w-24 h-24 rounded-full opacity-10 bg-white blur-xl" />
+
+                    <div className="relative flex items-start gap-4">
+                        <div className="w-16 h-16 rounded-2xl flex items-center justify-center font-bold text-xl shrink-0"
+                            style={{ background: 'rgba(255,255,255,0.15)', color: 'white', fontFamily: 'var(--font-display)', border: '1px solid rgba(255,255,255,0.2)' }}>
+                            {initials}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <h3 className="text-white font-bold text-lg leading-tight truncate" style={{ fontFamily: 'var(--font-display)' }}>
+                                {user?.name ?? '—'}
+                            </h3>
+                            <p className="text-white/60 text-xs mt-0.5 truncate">{user?.email ?? '—'}</p>
+                            <p className="text-white/40 text-xs mt-0.5">CPF: {user?.cpf ? `***${user.cpf.slice(-4)}` : '—'}</p>
                         </div>
                     </div>
-                </div>
 
-                <div className="px-4 py-2">
-                    <h3 className="text-slate-900 text-sm font-semibold uppercase tracking-wider opacity-60 px-2 pb-3 pt-4">Configurações</h3>
-                    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                        {menuItems.map((item, i) => (
-                            <div key={i}>
-                                <button
-                                    onClick={() => navigate(item.route)}
-                                    className="w-full flex items-center gap-4 px-4 py-4 hover:bg-slate-50 transition-colors group"
-                                >
-                                    <div className={`flex items-center justify-center rounded-xl shrink-0 size-10 group-hover:scale-110 transition-transform ${item.color}`}>
-                                        <item.icon size={20} />
-                                    </div>
-                                    <div className="flex flex-col items-start flex-1">
-                                        <p className="text-slate-900 text-sm font-medium leading-normal">{item.label}</p>
-                                        <p className="text-slate-500 text-xs font-normal leading-normal">{item.sub}</p>
-                                    </div>
-                                    <ChevronRight size={20} className="text-slate-400 group-hover:text-primary transition-colors" />
-                                </button>
-                                {i < menuItems.length - 1 && <div className="h-px bg-slate-100 mx-4" />}
-                            </div>
-                        ))}
+                    <div className="relative mt-4 pt-4 border-t flex items-center justify-between" style={{ borderColor: 'rgba(255,255,255,0.15)' }}>
+                        <div>
+                            <p className="text-white/40 text-[10px] uppercase tracking-widest mb-0.5">Função</p>
+                            <p className="text-white font-semibold text-sm">
+                                {roleLabel[user?.role ?? ''] ?? user?.role ?? '—'}
+                            </p>
+                        </div>
+                        <div className="px-3 py-1.5 rounded-full flex items-center gap-1.5"
+                            style={{ background: 'rgba(52,211,153,0.15)', border: '1px solid rgba(52,211,153,0.25)' }}>
+                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse" />
+                            <span className="text-emerald-200 text-xs font-bold">Ativo</span>
+                        </div>
                     </div>
+                </motion.div>
+            </div>
+
+            <div className="px-5 flex-1 pb-6">
+                <p className="text-xs font-semibold uppercase tracking-wider mb-3 px-1" style={{ color: 'var(--color-text-3)' }}>
+                    <Settings size={11} className="inline mr-1.5" />Configurações
+                </p>
+                <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                    {menuItems.map((item, i) => (
+                        <div key={i}>
+                            <button
+                                onClick={() => navigate(item.route)}
+                                className="w-full flex items-center gap-4 px-4 py-4 text-left transition-all hover:bg-slate-50 active:bg-slate-100 group"
+                            >
+                                <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-105"
+                                    style={{ background: item.bg, color: item.color }}>
+                                    <item.icon size={18} />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>{item.label}</p>
+                                    <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-3)' }}>{item.sub}</p>
+                                </div>
+                                <ChevronRight size={16} className="transition-transform group-hover:translate-x-0.5"
+                                    style={{ color: 'var(--color-text-3)' }} />
+                            </button>
+                            {i < menuItems.length - 1 && (
+                                <div className="h-px mx-4" style={{ background: 'var(--color-border)' }} />
+                            )}
+                        </div>
+                    ))}
                 </div>
 
-                <div className="px-4 mt-6">
-                    <button
-                        onClick={handleLogout}
-                        className="w-full flex items-center justify-center gap-2 bg-red-50 hover:bg-red-100 text-red-600 font-medium py-3 px-4 rounded-xl transition-all active:scale-95"
-                    >
-                        <LogOut size={20} />
-                        Sair da Conta
-                    </button>
-                    <p className="text-center text-slate-400 text-xs mt-6 mb-4 font-mono opacity-60">v1.0.0</p>
-                </div>
+                <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center justify-center gap-2 mt-4 py-3.5 rounded-2xl font-semibold text-sm transition-all active:scale-[0.98]"
+                    style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.15)', color: '#DC2626', fontFamily: 'var(--font-display)' }}
+                >
+                    <LogOut size={18} />
+                    Sair da conta
+                </button>
+
+                <p className="text-center text-xs mt-6" style={{ color: 'var(--color-text-3)' }}>v1.0.0 · ubus.me</p>
             </div>
         </div>
     )

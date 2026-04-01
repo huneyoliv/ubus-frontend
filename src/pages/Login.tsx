@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Mail, Eye, EyeOff } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { Eye, EyeOff, Bus, ArrowLeft, Mail, Lock } from 'lucide-react'
 import { useAuthStore } from '@/store/useAuthStore'
 import { api, ApiError } from '@/lib/api'
 import type { LoginResponse } from '@/types'
@@ -20,11 +21,7 @@ export default function Login() {
         setLoading(true)
 
         try {
-            const data = await api.post<LoginResponse>('/auth/login', {
-                email,
-                password,
-            })
-
+            const data = await api.post<LoginResponse>('/auth/login', { email, password })
             setAuth(data.accessToken, data.user)
 
             const role = data.user.role
@@ -47,91 +44,167 @@ export default function Login() {
     }
 
     return (
-        <div className="w-full max-w-md mx-auto min-h-screen relative overflow-hidden bg-white flex flex-col">
-            <div className="flex items-center p-4 pb-2 justify-between">
-                <button
-                    onClick={() => navigate('/')}
-                    className="flex size-12 shrink-0 items-center justify-center rounded-full hover:bg-slate-100 transition-colors text-slate-900"
-                >
-                    <ArrowLeft size={24} />
-                </button>
-            </div>
-
-            <div className="flex flex-col px-6 pt-4 pb-6">
-                <h1 className="text-slate-900 tracking-tight text-[32px] font-bold leading-tight text-left pb-3">
-                    Bem-vindo de volta!
-                </h1>
-                <p className="text-slate-500 text-base font-normal leading-normal">
-                    Informe seus dados para acessar a plataforma.
-                </p>
-            </div>
-
-            <form onSubmit={handleSubmit} className="flex flex-col gap-5 px-6 py-2 w-full">
-                <label className="flex flex-col w-full">
-                    <p className="text-slate-900 text-sm font-medium leading-normal pb-2">Email</p>
-                    <div className="flex w-full items-center rounded-xl bg-slate-100 border border-transparent focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all">
-                        <input
-                            className="flex-1 w-full bg-transparent border-none text-slate-900 placeholder:text-slate-400 h-14 px-4 text-base font-normal focus:ring-0 focus:outline-none"
-                            placeholder="seu@email.com"
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                        <div className="flex items-center justify-center pr-4 text-slate-400">
-                            <Mail size={24} />
-                        </div>
+        <div className="w-full min-h-dvh flex flex-col md:flex-row">
+            <div className="hidden md:flex md:w-[46%] relative overflow-hidden flex-col justify-between p-12"
+                style={{ background: 'linear-gradient(135deg, #0F172A 0%, #1E3A8A 50%, #0F172A 100%)' }}>
+                <div className="absolute inset-0 pointer-events-none">
+                    <div className="absolute top-0 right-0 w-96 h-96 rounded-full opacity-20 blur-3xl"
+                        style={{ background: 'radial-gradient(circle, #3B82F6, transparent)' }} />
+                    <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full opacity-15 blur-2xl"
+                        style={{ background: 'radial-gradient(circle, #7C3AED, transparent)' }} />
+                </div>
+                <div className="relative flex items-center gap-2.5">
+                    <div className="flex items-center justify-center w-9 h-9 rounded-xl"
+                        style={{ background: 'rgba(59,130,246,0.25)', border: '1px solid rgba(59,130,246,0.3)' }}>
+                        <Bus size={18} className="text-blue-400" />
                     </div>
-                </label>
-
-                <label className="flex flex-col w-full">
-                    <p className="text-slate-900 text-sm font-medium leading-normal pb-2">Senha</p>
-                    <div className="flex w-full items-center rounded-xl bg-slate-100 border border-transparent focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all">
-                        <input
-                            className="flex-1 w-full bg-transparent border-none text-slate-900 placeholder:text-slate-400 h-14 px-4 text-base font-normal focus:ring-0 focus:outline-none"
-                            placeholder="Digite sua senha"
-                            type={showPassword ? 'text' : 'password'}
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                        <button
-                            type="button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            className="flex items-center justify-center pr-4 text-slate-400 hover:text-primary transition-colors"
-                        >
-                            {showPassword ? <EyeOff size={24} /> : <Eye size={24} />}
-                        </button>
-                    </div>
-                </label>
-
-                <div className="flex justify-end">
-                    <a className="text-primary text-sm font-medium hover:underline transition-all" href="#">
-                        Esqueci minha senha
-                    </a>
+                    <span className="text-white font-bold text-lg" style={{ fontFamily: 'var(--font-display)' }}>Ubus</span>
                 </div>
 
-                {error && (
-                    <p className="text-red-500 text-sm text-center -mt-2">{error}</p>
-                )}
+                <div className="relative">
+                    <p className="text-blue-400 text-sm font-semibold tracking-widest uppercase mb-4">Bem-vindo de volta</p>
+                    <h1 className="text-white text-5xl font-black leading-[1.1] mb-5" style={{ fontFamily: 'var(--font-display)' }}>
+                        Mobilidade<br />universitária<br />inteligente.
+                    </h1>
+                    <p className="text-slate-400 text-base leading-relaxed max-w-xs">
+                        Sua plataforma de transporte estudantil. Reserve, acompanhe e viaje com segurança.
+                    </p>
+                </div>
 
-                <div className="h-4" />
+                <div className="relative flex items-center gap-4">
+                    <div className="flex items-center gap-2 px-4 py-2.5 rounded-2xl"
+                        style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        <span className="text-white/60 text-sm font-medium">Sistema online</span>
+                    </div>
+                    <div className="px-4 py-2.5 rounded-2xl"
+                        style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                        <span className="text-white/60 text-sm font-medium">api.ubus.me</span>
+                    </div>
+                </div>
+            </div>
 
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className="flex w-full items-center justify-center rounded-xl bg-primary h-14 px-4 text-white text-base font-bold tracking-wide hover:bg-blue-600 focus:ring-4 focus:ring-primary/30 transition-all shadow-lg shadow-primary/30 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
-                >
-                    {loading ? 'Entrando...' : 'Acessar Plataforma'}
-                </button>
-            </form>
-
-            <div className="flex-1 flex flex-col justify-end pb-8 items-center text-center mt-auto">
-                <p className="text-slate-400 text-sm">
-                    Ainda não tem conta?{' '}
-                    <button onClick={() => navigate('/cadastro')} className="text-primary font-medium">
-                        Cadastre-se
+            <div className="flex-1 flex flex-col" style={{ background: 'var(--color-bg)' }}>
+                <div className="md:hidden flex items-center px-5 pt-12 pb-4">
+                    <button
+                        onClick={() => navigate('/')}
+                        className="flex items-center justify-center w-10 h-10 rounded-xl transition-all hover:bg-white active:scale-95"
+                        style={{ border: '1.5px solid var(--color-border)' }}
+                    >
+                        <ArrowLeft size={20} style={{ color: 'var(--color-text)' }} />
                     </button>
-                </p>
-                <div className="mt-8 w-12 h-1 bg-slate-200 rounded-full" />
+                </div>
+
+                <div className="flex-1 flex flex-col justify-center px-6 py-8 md:px-16 max-w-md md:max-w-none w-full mx-auto md:mx-0">
+                    <div className="mb-8">
+                        <div className="hidden md:flex items-center gap-2.5 mb-10">
+                            <div className="flex items-center justify-center w-8 h-8 rounded-lg"
+                                style={{ background: 'rgba(37,99,235,0.1)' }}>
+                                <Bus size={16} style={{ color: 'var(--color-primary)' }} />
+                            </div>
+                            <span className="font-bold text-base" style={{ fontFamily: 'var(--font-display)', color: 'var(--color-primary)' }}>Ubus</span>
+                        </div>
+                        <h2 className="text-3xl md:text-4xl font-black mb-2" style={{ fontFamily: 'var(--font-display)', color: 'var(--color-text)' }}>
+                            Entrar
+                        </h2>
+                        <p style={{ color: 'var(--color-text-2)' }} className="text-base">
+                            Informe suas credenciais para acessar.
+                        </p>
+                    </div>
+
+                    <motion.form
+                        onSubmit={handleSubmit}
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4 }}
+                        className="flex flex-col gap-4"
+                    >
+                        <div className="flex flex-col gap-1.5">
+                            <label className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>Email</label>
+                            <div className="flex items-center rounded-xl overflow-hidden transition-all"
+                                style={{ background: 'var(--color-surface)', border: '1.5px solid var(--color-border)' }}>
+                                <div className="flex items-center justify-center w-12 h-14 shrink-0" style={{ color: 'var(--color-text-3)' }}>
+                                    <Mail size={18} />
+                                </div>
+                                <input
+                                    className="flex-1 h-14 bg-transparent text-sm outline-none pr-4"
+                                    style={{ color: 'var(--color-text)' }}
+                                    placeholder="seu@email.com"
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col gap-1.5">
+                            <label className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>Senha</label>
+                            <div className="flex items-center rounded-xl overflow-hidden transition-all"
+                                style={{ background: 'var(--color-surface)', border: '1.5px solid var(--color-border)' }}>
+                                <div className="flex items-center justify-center w-12 h-14 shrink-0" style={{ color: 'var(--color-text-3)' }}>
+                                    <Lock size={18} />
+                                </div>
+                                <input
+                                    className="flex-1 h-14 bg-transparent text-sm outline-none"
+                                    style={{ color: 'var(--color-text)' }}
+                                    placeholder="Sua senha"
+                                    type={showPassword ? 'text' : 'password'}
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="flex items-center justify-center w-12 h-14 shrink-0 transition-colors"
+                                    style={{ color: showPassword ? 'var(--color-primary)' : 'var(--color-text-3)' }}
+                                >
+                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="flex justify-end">
+                            <a className="text-sm font-semibold transition-colors hover:opacity-80" style={{ color: 'var(--color-primary)' }} href="#">
+                                Esqueci minha senha
+                            </a>
+                        </div>
+
+                        {error && (
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="p-3.5 rounded-xl text-sm font-medium text-center"
+                                style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.15)', color: '#EF4444' }}
+                            >
+                                {error}
+                            </motion.div>
+                        )}
+
+                        <div className="pt-2">
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="btn-primary"
+                            >
+                                {loading ? (
+                                    <span className="flex items-center gap-2">
+                                        <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                        Entrando...
+                                    </span>
+                                ) : 'Acessar plataforma'}
+                            </button>
+                        </div>
+                    </motion.form>
+
+                    <p className="text-center text-sm mt-8" style={{ color: 'var(--color-text-2)' }}>
+                        Ainda não tem conta?{' '}
+                        <button onClick={() => navigate('/cadastro')} className="font-bold transition-colors hover:opacity-80" style={{ color: 'var(--color-primary)' }}>
+                            Cadastre-se
+                        </button>
+                    </p>
+                </div>
             </div>
         </div>
     )

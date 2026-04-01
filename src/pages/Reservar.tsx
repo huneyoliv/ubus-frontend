@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { ArrowLeft, Bus, Ticket } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { ArrowLeft, Bus, Ticket, Users } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { api, ApiError } from '@/lib/api'
 import type { Trip, CreateReservationPayload } from '@/types'
@@ -25,10 +26,7 @@ export default function Reservar() {
     const capacity = trip?.capacidadeReal ?? 40
 
     useEffect(() => {
-        if (!tripId) {
-            setLoading(false)
-            return
-        }
+        if (!tripId) { setLoading(false); return }
 
         const fetchSeats = async () => {
             try {
@@ -40,7 +38,6 @@ export default function Reservar() {
                 }))
                 setSeats(seatList)
             } catch {
-                // fallback: all available
                 setSeats(Array.from({ length: capacity }, (_, i) => ({ id: i + 1, status: 'available' as const })))
             } finally {
                 setLoading(false)
@@ -57,7 +54,6 @@ export default function Reservar() {
             setSelectedSeat(null)
             setSeats(seats.map((s) => (s.id === id ? { ...s, status: 'available' as const } : s)))
         } else {
-            // Deselect previous
             setSeats(seats.map((s) => {
                 if (s.id === id) return { ...s, status: 'selected' as const }
                 if (s.id === selectedSeat) return { ...s, status: 'available' as const }
@@ -72,10 +68,7 @@ export default function Reservar() {
         setSubmitting(true)
         setError('')
         try {
-            const payload: CreateReservationPayload = {
-                tripId,
-                seatNumber: selectedSeat,
-            }
+            const payload: CreateReservationPayload = { tripId, seatNumber: selectedSeat }
             await api.post('/reservations', payload)
             navigate('/bilhete', { state: { tripId, seatNumber: selectedSeat, trip } })
         } catch (err) {
@@ -90,162 +83,191 @@ export default function Reservar() {
         }
     }
 
-    // Generate 4-column layout
     const rows = Math.ceil(seats.length / 4)
-    const leftSeats = Array.from({ length: rows }, (_, row) =>
-        [seats[row * 4], seats[row * 4 + 1]].filter(Boolean)
-    )
-    const rightSeats = Array.from({ length: rows }, (_, row) =>
-        [seats[row * 4 + 2], seats[row * 4 + 3]].filter(Boolean)
+    const leftSeats = Array.from({ length: rows }, (_, row) => [seats[row * 4], seats[row * 4 + 1]].filter(Boolean))
+    const rightSeats = Array.from({ length: rows }, (_, row) => [seats[row * 4 + 2], seats[row * 4 + 3]].filter(Boolean))
+
+    const occupiedCount = seats.filter(s => s.status === 'occupied').length
+    const availableCount = seats.filter(s => s.status === 'available').length
+
+    const seatClass = (status: SeatStatus) => cn(
+        'h-10 w-10 rounded-xl flex items-center justify-center text-xs font-bold transition-all select-none',
+        status === 'occupied' && 'cursor-not-allowed',
+        status === 'available' && 'cursor-pointer',
+        status === 'selected' && 'cursor-pointer scale-105',
     )
 
-    const seatClass = (status: SeatStatus) =>
-        cn(
-            'h-10 w-10 rounded-lg flex items-center justify-center text-xs font-medium transition-all',
-            status === 'occupied' && 'bg-slate-200 text-slate-400 cursor-not-allowed',
-            status === 'available' && 'border-2 border-primary/30 bg-white text-slate-600 cursor-pointer hover:border-primary hover:bg-primary/5',
-            status === 'selected' && 'bg-primary text-white shadow-lg shadow-primary/40 font-bold ring-2 ring-primary ring-offset-2 ring-offset-white'
-        )
+    const seatStyle = (status: SeatStatus): React.CSSProperties => {
+        if (status === 'occupied') return { background: 'var(--color-bg)', color: 'var(--color-text-3)', border: '1.5px solid var(--color-border)' }
+        if (status === 'selected') return { background: 'var(--color-primary)', color: 'white', boxShadow: '0 4px 12px rgba(37,99,235,0.4)', border: 'none' }
+        return { background: 'white', color: 'var(--color-text-2)', border: '1.5px solid rgba(37,99,235,0.25)', boxShadow: '0 1px 3px rgba(37,99,235,0.08)' }
+    }
 
     if (!tripId) {
         return (
-            <div className="w-full max-w-md mx-auto min-h-screen bg-bg-light flex flex-col items-center justify-center p-6 text-center">
-                <p className="text-slate-500">Nenhuma viagem selecionada.</p>
-                <button onClick={() => navigate('/dashboard')} className="mt-4 text-primary font-medium">Voltar</button>
+            <div className="flex flex-col items-center justify-center min-h-screen gap-4 p-6 text-center">
+                <p style={{ color: 'var(--color-text-2)' }}>Nenhuma viagem selecionada.</p>
+                <button onClick={() => navigate('/dashboard')} className="text-sm font-semibold" style={{ color: 'var(--color-primary)' }}>
+                    Voltar ao início
+                </button>
             </div>
         )
     }
 
     return (
-        <div className="w-full max-w-md mx-auto min-h-screen relative overflow-hidden bg-bg-light flex flex-col">
-            <header className="flex items-center gap-4 px-6 pt-12 pb-4 bg-white shadow-sm z-20 shrink-0">
-                <button
-                    onClick={() => navigate('/dashboard')}
-                    className="flex h-10 w-10 items-center justify-center rounded-full text-slate-900 hover:bg-slate-100 transition-colors"
-                >
-                    <ArrowLeft size={24} />
+        <div className="flex flex-col min-h-full" style={{ background: 'var(--color-bg)' }}>
+            <div className="flex items-center gap-3 px-5 py-4 sticky top-0 z-20"
+                style={{ background: 'rgba(240,244,255,0.92)', backdropFilter: 'blur(20px)', borderBottom: '1px solid var(--color-border)' }}>
+                <button onClick={() => navigate('/dashboard')}
+                    className="flex items-center justify-center w-10 h-10 rounded-xl transition-all hover:bg-white"
+                    style={{ border: '1.5px solid var(--color-border)' }}>
+                    <ArrowLeft size={18} style={{ color: 'var(--color-text)' }} />
                 </button>
-                <h1 className="text-xl font-bold tracking-tight">Nova Reserva</h1>
-            </header>
-
-            <main className="flex-1 overflow-y-auto relative">
-                <div className="px-6 py-6 pb-40 flex flex-col gap-8">
-                    <div className="flex flex-col gap-3">
-                        <label className="text-sm font-semibold text-slate-500 uppercase tracking-wide">Viagem</label>
-                        <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 flex flex-col gap-4">
-                            <div className="flex items-center gap-4">
-                                <div className="h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center text-primary shrink-0">
-                                    <Bus size={20} />
-                                </div>
-                                <div>
-                                    <p className="text-sm font-bold text-slate-900">
-                                        {trip?.direcao ?? 'Viagem'} — {trip?.turno ?? ''}
-                                    </p>
-                                    <p className="text-xs text-slate-500">
-                                        {trip?.dataViagem ?? tripId} • {trip?.linha?.nome ?? ''}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {loading ? (
-                        <div className="flex items-center justify-center py-8">
-                            <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-                        </div>
-                    ) : (
-                        <div className="flex flex-col items-center gap-4">
-                            <label className="self-start text-sm font-semibold text-slate-500 uppercase tracking-wide">Mapa de Assentos</label>
-                            <div className="relative w-full max-w-[320px] bg-white rounded-[3rem] px-6 py-10 shadow-lg border border-slate-200">
-                                <div className="absolute top-6 left-6 text-slate-300">
-                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="10" /><path d="M12 2a10 10 0 0 1 0 20" /></svg>
-                                </div>
-                                <div className="mt-10 flex justify-center">
-                                    <div className="grid grid-cols-[auto_16px_auto] gap-x-2 gap-y-4">
-                                        <div className="grid grid-cols-2 gap-3">
-                                            {leftSeats.map((row) =>
-                                                row.map((seat) => (
-                                                    <button
-                                                        key={seat.id}
-                                                        onClick={() => toggleSeat(seat.id)}
-                                                        disabled={seat.status === 'occupied'}
-                                                        className={seatClass(seat.status)}
-                                                    >
-                                                        {String(seat.id).padStart(2, '0')}
-                                                    </button>
-                                                ))
-                                            )}
-                                        </div>
-                                        <div className="w-4" />
-                                        <div className="grid grid-cols-2 gap-3">
-                                            {rightSeats.map((row) =>
-                                                row.map((seat) => (
-                                                    <button
-                                                        key={seat.id}
-                                                        onClick={() => toggleSeat(seat.id)}
-                                                        disabled={seat.status === 'occupied'}
-                                                        className={seatClass(seat.status)}
-                                                    >
-                                                        {String(seat.id).padStart(2, '0')}
-                                                    </button>
-                                                ))
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="mt-8 flex justify-center gap-4 text-[10px] font-medium text-slate-500">
-                                    <div className="flex items-center gap-1.5">
-                                        <div className="h-3 w-3 rounded-full bg-slate-200" />
-                                        <span>Ocupado</span>
-                                    </div>
-                                    <div className="flex items-center gap-1.5">
-                                        <div className="h-3 w-3 rounded-full border border-primary bg-white" />
-                                        <span>Livre</span>
-                                    </div>
-                                    <div className="flex items-center gap-1.5">
-                                        <div className="h-3 w-3 rounded-full bg-primary" />
-                                        <span>Seu</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {error && (
-                        <div className="p-3 rounded-xl bg-red-50 border border-red-100 text-red-600 text-sm font-medium">
-                            {error}
-                        </div>
+                <div>
+                    <h1 className="font-bold text-base" style={{ fontFamily: 'var(--font-display)', color: 'var(--color-text)' }}>Nova Reserva</h1>
+                    {trip && (
+                        <p className="text-xs" style={{ color: 'var(--color-text-3)' }}>
+                            {trip.direcao} • {trip.turno} • {trip.dataViagem}
+                        </p>
                     )}
                 </div>
-            </main>
+            </div>
 
-            <footer className="fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-slate-100 shadow-[0_-8px_30px_rgba(0,0,0,0.05)] px-6 py-6 pb-8">
-                <div className="max-w-md mx-auto w-full flex flex-col gap-4">
-                    <div className="flex items-center justify-between px-1">
-                        <div className="flex flex-col">
-                            <span className="text-xs font-medium text-slate-500 uppercase">Resumo</span>
-                            <span className="text-base font-semibold text-slate-900">
-                                {selectedSeat
-                                    ? `Assento ${String(selectedSeat).padStart(2, '0')}`
-                                    : 'Nenhum assento selecionado'}
-                            </span>
-                        </div>
-                        <div className="text-right">
-                            <span className="text-xs font-medium text-slate-500 uppercase">Total</span>
-                            <br />
-                            <span className="text-base font-bold text-primary">Gratuito</span>
+            <div className="flex-1 px-5 py-5 pb-36">
+                <div className="flex gap-3 mb-6">
+                    <div className="flex-1 p-3 rounded-xl flex items-center gap-2.5" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                        <Users size={16} style={{ color: 'var(--color-primary)' }} />
+                        <div>
+                            <p className="text-lg font-black" style={{ fontFamily: 'var(--font-display)', color: 'var(--color-text)' }}>{availableCount}</p>
+                            <p className="text-[10px] font-semibold uppercase" style={{ color: 'var(--color-text-3)' }}>Livres</p>
                         </div>
                     </div>
+                    <div className="flex-1 p-3 rounded-xl flex items-center gap-2.5" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                        <Bus size={16} style={{ color: 'var(--color-text-3)' }} />
+                        <div>
+                            <p className="text-lg font-black" style={{ fontFamily: 'var(--font-display)', color: 'var(--color-text)' }}>{occupiedCount}</p>
+                            <p className="text-[10px] font-semibold uppercase" style={{ color: 'var(--color-text-3)' }}>Ocupados</p>
+                        </div>
+                    </div>
+                    <div className="flex-1 p-3 rounded-xl flex items-center gap-2.5" style={{ background: selectedSeat ? 'rgba(37,99,235,0.06)' : 'var(--color-surface)', border: `1px solid ${selectedSeat ? 'rgba(37,99,235,0.2)' : 'var(--color-border)'}` }}>
+                        <Ticket size={16} style={{ color: selectedSeat ? 'var(--color-primary)' : 'var(--color-text-3)' }} />
+                        <div>
+                            <p className="text-lg font-black" style={{ fontFamily: 'var(--font-display)', color: selectedSeat ? 'var(--color-primary)' : 'var(--color-text)' }}>
+                                {selectedSeat ? String(selectedSeat).padStart(2, '0') : '—'}
+                            </p>
+                            <p className="text-[10px] font-semibold uppercase" style={{ color: 'var(--color-text-3)' }}>Selecionado</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 px-1" style={{ color: 'var(--color-text-3)' }}>Mapa de Assentos</h3>
+
+                {loading ? (
+                    <div className="flex justify-center py-12">
+                        <div className="w-8 h-8 border-3 border-t-transparent rounded-full animate-spin"
+                            style={{ borderColor: 'var(--color-border)', borderTopColor: 'var(--color-primary)', borderWidth: 3 }} />
+                    </div>
+                ) : (
+                    <div className="flex justify-center">
+                        <div className="w-full max-w-sm rounded-3xl overflow-hidden"
+                            style={{ background: 'var(--color-surface)', border: '1.5px solid var(--color-border)', boxShadow: '0 8px 32px -8px rgba(37,99,235,0.1)' }}>
+                            <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: 'var(--color-border)' }}>
+                                <div className="flex items-center gap-2">
+                                    <Bus size={16} style={{ color: 'var(--color-primary)' }} />
+                                    <span className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>{trip?.linha?.nome ?? 'Ônibus'}</span>
+                                </div>
+                                <span className="text-xs px-2 py-0.5 rounded-full font-semibold"
+                                    style={{ background: 'rgba(37,99,235,0.08)', color: 'var(--color-primary)' }}>
+                                    {capacity} lugares
+                                </span>
+                            </div>
+
+                            <div className="px-6 py-6">
+                                <div className="grid grid-cols-[auto_20px_auto] gap-x-3 gap-y-3">
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {leftSeats.map((row) => row.map((seat) => (
+                                            <motion.button
+                                                key={seat.id}
+                                                whileTap={{ scale: seat.status !== 'occupied' ? 0.92 : 1 }}
+                                                onClick={() => toggleSeat(seat.id)}
+                                                disabled={seat.status === 'occupied'}
+                                                className={seatClass(seat.status)}
+                                                style={seatStyle(seat.status)}
+                                            >
+                                                {String(seat.id).padStart(2, '0')}
+                                            </motion.button>
+                                        )))}
+                                    </div>
+                                    <div className="flex flex-col items-center gap-2 pt-1">
+                                        {Array.from({ length: rows }).map((_, i) => (
+                                            <div key={i} className="h-10 w-px" style={{ background: 'var(--color-border)' }} />
+                                        ))}
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {rightSeats.map((row) => row.map((seat) => (
+                                            <motion.button
+                                                key={seat.id}
+                                                whileTap={{ scale: seat.status !== 'occupied' ? 0.92 : 1 }}
+                                                onClick={() => toggleSeat(seat.id)}
+                                                disabled={seat.status === 'occupied'}
+                                                className={seatClass(seat.status)}
+                                                style={seatStyle(seat.status)}
+                                            >
+                                                {String(seat.id).padStart(2, '0')}
+                                            </motion.button>
+                                        )))}
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center justify-center gap-5 mt-6 pt-4 border-t" style={{ borderColor: 'var(--color-border)' }}>
+                                    <div className="flex items-center gap-1.5">
+                                        <div className="w-3 h-3 rounded-md" style={{ background: 'var(--color-bg)', border: '1.5px solid var(--color-border)' }} />
+                                        <span className="text-xs" style={{ color: 'var(--color-text-3)' }}>Ocupado</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                        <div className="w-3 h-3 rounded-md" style={{ background: 'white', border: '1.5px solid rgba(37,99,235,0.25)' }} />
+                                        <span className="text-xs" style={{ color: 'var(--color-text-3)' }}>Livre</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                        <div className="w-3 h-3 rounded-md" style={{ background: 'var(--color-primary)' }} />
+                                        <span className="text-xs" style={{ color: 'var(--color-text-3)' }}>Selecionado</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {error && (
+                    <div className="mt-4 p-3.5 rounded-xl text-sm font-medium text-center"
+                        style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.15)', color: '#EF4444' }}>
+                        {error}
+                    </div>
+                )}
+            </div>
+
+            <div className="fixed bottom-0 left-0 right-0 z-30 px-5 py-4"
+                style={{ background: 'rgba(240,244,255,0.95)', backdropFilter: 'blur(20px)', borderTop: '1px solid var(--color-border)' }}>
+                <div className="max-w-2xl mx-auto">
                     <button
                         onClick={handleReserve}
                         disabled={selectedSeat === null || submitting}
-                        className="flex w-full items-center justify-center gap-3 rounded-xl bg-primary py-4 text-base font-bold text-white shadow-lg shadow-primary/30 transition-transform active:scale-[0.98] hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="btn-primary"
                     >
-                        <Ticket size={20} />
-                        <span>{submitting ? 'Reservando...' : 'Confirmar Reserva'}</span>
+                        {submitting ? (
+                            <span className="flex items-center gap-2">
+                                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                Reservando...
+                            </span>
+                        ) : (
+                            <span className="flex items-center gap-2">
+                                <Ticket size={18} />
+                                {selectedSeat ? `Confirmar assento ${String(selectedSeat).padStart(2, '0')}` : 'Selecione um assento'}
+                            </span>
+                        )}
                     </button>
                 </div>
-            </footer>
+            </div>
         </div>
     )
 }

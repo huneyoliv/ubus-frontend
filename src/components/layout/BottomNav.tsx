@@ -1,6 +1,5 @@
 import { NavLink } from 'react-router-dom'
 import { Home, Clock, CreditCard, Wallet, User as UserIcon, ShieldCheck } from 'lucide-react'
-import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/store/useAuthStore'
 
 export default function BottomNav() {
@@ -17,28 +16,36 @@ export default function BottomNav() {
     ]
 
     return (
-        <nav className="absolute bottom-0 w-full z-50 bg-white/80 backdrop-blur-lg border-t border-slate-200 px-2 pb-[env(safe-area-inset-bottom)]">
-            <div className="flex justify-around items-end h-16">
+        <nav
+            className="md:hidden fixed bottom-0 left-0 right-0 z-50 px-2"
+            style={{
+                background: 'rgba(255,255,255,0.92)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                borderTop: '1px solid var(--color-border)',
+                paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+            }}
+        >
+            <div className="flex justify-around items-center h-16">
                 {navItems.map(({ route, icon: Icon, label }) => (
                     <NavLink
                         key={route}
                         to={route}
                         className={({ isActive }) =>
-                            cn(
-                                'flex flex-col items-center gap-1 group transition-colors min-w-0',
-                                isActive ? 'text-primary' : 'text-slate-400 hover:text-slate-600'
-                            )
+                            `flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl transition-all ${isActive ? 'text-primary' : 'text-text-3 hover:text-text-2'
+                            }`
                         }
+                        style={({ isActive }) => isActive ? { color: 'var(--color-primary)' } : { color: 'var(--color-text-3)' }}
                     >
                         {({ isActive }) => (
                             <>
-                                <div className={cn(
-                                    'flex items-center justify-center w-10 h-8 rounded-full transition-all',
-                                    isActive && 'bg-primary/10'
-                                )}>
-                                    <Icon size={22} strokeWidth={isActive ? 2.5 : 1.8} />
+                                <div
+                                    className="flex items-center justify-center w-10 h-7 rounded-xl transition-all"
+                                    style={isActive ? { background: 'rgba(37,99,235,0.1)' } : {}}
+                                >
+                                    <Icon size={20} strokeWidth={isActive ? 2.5 : 1.8} />
                                 </div>
-                                <span className="text-[10px] font-medium truncate">{label}</span>
+                                <span className="text-[10px] font-semibold tracking-tight">{label}</span>
                             </>
                         )}
                     </NavLink>
