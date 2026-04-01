@@ -109,8 +109,8 @@ export default function ManagerFrota() {
                                     </div>
                                     <div className="p-2 rounded-xl flex flex-col items-center justify-center gap-1.5" style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)' }}>
                                         <div className="flex gap-2">
-                                            {bus.temArCondicionado && <Zap size={15} style={{ color: '#D97706' }} title="Ar Condicionado" />}
-                                            {bus.temBanheiro && <Info size={15} style={{ color: 'var(--color-primary)' }} title="Banheiro" />}
+                                            {bus.temArCondicionado && <span title="Ar Condicionado"><Zap size={15} style={{ color: '#D97706' }} /></span>}
+                                            {bus.temBanheiro && <span title="Banheiro"><Info size={15} style={{ color: 'var(--color-primary)' }} /></span>}
                                         </div>
                                         <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-3)' }}>Extras</p>
                                     </div>
