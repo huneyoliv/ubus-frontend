@@ -116,3 +116,33 @@ export interface CreateReservationPayload {
     seatNumber?: number | null
     rideShare?: boolean
 }
+
+/* ── Backend Response Types ── */
+
+/** Estrutura retornada pelo backend em GET /reservations/minhas */
+export interface BackendReservationResponse {
+    reserva: {
+        id: string
+        idViagem: string
+        idUsuario: string
+        numeroAssento: number | null
+        isCarona: boolean
+        status: StatusReserva
+        criadoEm: string
+    }
+    viagem: Trip
+}
+
+/** Mapeia a resposta do backend para o formato esperado pelo frontend */
+export function mapBackendReservation(item: BackendReservationResponse): Reservation {
+    return {
+        id: item.reserva.id,
+        idViagem: item.reserva.idViagem,
+        idUsuario: item.reserva.idUsuario,
+        numeroAssento: item.reserva.numeroAssento,
+        isCarona: item.reserva.isCarona,
+        status: item.reserva.status,
+        createdAt: item.reserva.criadoEm,
+        viagem: item.viagem,
+    }
+}

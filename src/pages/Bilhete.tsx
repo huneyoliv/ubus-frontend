@@ -4,7 +4,8 @@ import { ArrowLeft, Bus, Clock, AlertTriangle, CheckCircle } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { api } from '@/lib/api'
 import { useAuthStore } from '@/store/useAuthStore'
-import type { Reservation } from '@/types'
+import type { Reservation, BackendReservationResponse } from '@/types'
+import { mapBackendReservation } from '@/types'
 
 export default function Bilhete() {
     const navigate = useNavigate()
@@ -30,8 +31,8 @@ export default function Bilhete() {
                 .catch(() => { })
                 .finally(() => setLoading(false))
         } else {
-            api.get<Reservation[]>('/reservations/minhas')
-                .then((list) => { if (list.length > 0) setReservation(list[0]) })
+            api.get<BackendReservationResponse[]>('/reservations/minhas')
+                .then((list) => { if (list.length > 0) setReservation(mapBackendReservation(list[0])) })
                 .catch(() => { })
                 .finally(() => setLoading(false))
         }

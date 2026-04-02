@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { CalendarDays, CheckCircle, XCircle, Clock, ArrowRight } from 'lucide-react'
 import { api } from '@/lib/api'
-import type { Reservation, StatusReserva } from '@/types'
+import type { Reservation, StatusReserva, BackendReservationResponse } from '@/types'
+import { mapBackendReservation } from '@/types'
 import { useNavigate } from 'react-router-dom'
 
 const statusMap: Record<StatusReserva, { label: string; icon: typeof CheckCircle; bg: string; color: string }> = {
@@ -19,8 +20,8 @@ export default function Historico() {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        api.get<Reservation[]>('/reservations/minhas')
-            .then((data) => setReservations(Array.isArray(data) ? data : []))
+        api.get<BackendReservationResponse[]>('/reservations/minhas')
+            .then((data) => setReservations(Array.isArray(data) ? data.map(mapBackendReservation) : []))
             .catch(() => setReservations([]))
             .finally(() => setLoading(false))
     }, [])
