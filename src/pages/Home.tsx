@@ -4,7 +4,8 @@ import { motion } from 'framer-motion'
 import { Bell, ArrowRight, CheckCircle, Clock, MapPin, CalendarCheck, Bus, Zap } from 'lucide-react'
 import { useAuthStore } from '@/store/useAuthStore'
 import { api } from '@/lib/api'
-import type { Trip, Reservation } from '@/types'
+import type { Trip, Reservation, BackendReservationResponse } from '@/types'
+import { mapBackendReservation } from '@/types'
 
 export default function Home() {
     const navigate = useNavigate()
@@ -17,12 +18,12 @@ export default function Home() {
         const fetchData = async () => {
             setLoading(true)
             try {
-                const [trips, reservations] = await Promise.all([
+                const [trips, backendReservations] = await Promise.all([
                     api.get<Trip[]>('/trips/open').catch(() => [] as Trip[]),
-                    api.get<Reservation[]>('/reservations/minhas').catch(() => [] as Reservation[]),
+                    api.get<BackendReservationResponse[]>('/reservations/minhas').catch(() => [] as BackendReservationResponse[]),
                 ])
                 setOpenTrips(trips)
-                setMyReservations(reservations)
+                setMyReservations(backendReservations.map(mapBackendReservation))
             } catch {
             } finally {
                 setLoading(false)

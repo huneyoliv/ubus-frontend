@@ -14,6 +14,7 @@ import MeusDados from '@/pages/MeusDados'
 import AlterarSenha from '@/pages/AlterarSenha'
 import RenovarSemestre from '@/pages/RenovarSemestre'
 import Regras from '@/pages/Regras'
+import RedefinirSenha from '@/pages/RedefinirSenha'
 
 import MotoristaSplash from '@/pages/driver/MotoristaSplash'
 import SelecionarVeiculo from '@/pages/driver/SelecionarVeiculo'
@@ -37,6 +38,7 @@ export const router = createBrowserRouter([
     { path: '/', element: <Splash /> },
     { path: '/login', element: <Login /> },
     { path: '/cadastro', element: <Cadastro /> },
+    { path: '/user/reset-password', element: <RedefinirSenha /> },
 
     { path: '/motorista', element: <MotoristaSplash /> },
     { path: '/selecionar-veiculo', element: <SelecionarVeiculo /> },
