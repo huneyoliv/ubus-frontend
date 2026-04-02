@@ -46,7 +46,7 @@ export default function ManagerValidations() {
         try {
             await api.patch(`/usuarios/${id}/status`, { status })
             setStudents(prev => prev.filter(s => s.id !== id))
-            setSelectedId(prev => {
+            setSelectedId(() => {
                 const remaining = students.filter(s => s.id !== id)
                 return remaining.length > 0 ? remaining[0].id : null
             })
