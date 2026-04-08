@@ -12,7 +12,7 @@ export default function BottomNav() {
         ...(pagamentos ? [{ icon: Wallet, label: 'Pagamentos', route: '/pagamentos' }] : []),
         ...(lider ? [{ icon: ShieldCheck, label: 'Líder', route: '/lider' }] : []),
         { icon: CreditCard, label: 'Carteirinha', route: '/carteirinha' },
-        { icon: UserIcon, label: 'Perfil', route: '/perfil' },
+        { icon: UserIcon, label: 'Perfil', route: '/me' },
     ]
 
     return (

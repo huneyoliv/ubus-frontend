@@ -1,10 +1,9 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowLeft, Search, Check, Camera, FileText, X, Home, Mail, User, Phone, Lock, AlertCircle, Accessibility } from 'lucide-react'
+import { ArrowLeft, Search, Check, Camera, FileText, X, Home, Mail, User, Phone, Lock, AlertCircle } from 'lucide-react'
 import { api, ApiError } from '@/lib/api'
-import type { Prefeitura, RegisterPayload, LoginResponse } from '@/types'
-import { useAuthStore } from '@/store/useAuthStore'
+import type { Prefeitura, RegisterPayload } from '@/types'
 
 function validateCpf(raw: string): boolean {
     const digits = raw.replace(/\D/g, '')
@@ -32,7 +31,6 @@ function validateEmail(email: string): boolean {
 
 export default function Cadastro() {
     const navigate = useNavigate()
-    const setAuth = useAuthStore((s) => s.setAuth)
     const [step, setStep] = useState(1)
     const [search, setSearch] = useState('')
     const [name, setName] = useState('')
@@ -44,10 +42,7 @@ export default function Cadastro() {
     const [photo, setPhoto] = useState<string | null>(null)
     const [gradeFile, setGradeFile] = useState<File | null>(null)
     const [residenciaFile, setResidenciaFile] = useState<File | null>(null)
-    const [laudoFile, setLaudoFile] = useState<File | null>(null)
     const [agreed, setAgreed] = useState(false)
-    const [isPcd, setIsPcd] = useState(false)
-    const [needsElevator, setNeedsElevator] = useState(false)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
     const [stepErrors, setStepErrors] = useState<string[]>([])
@@ -58,7 +53,6 @@ export default function Cadastro() {
     const photoInputRef = useRef<HTMLInputElement>(null)
     const gradeInputRef = useRef<HTMLInputElement>(null)
     const residenciaInputRef = useRef<HTMLInputElement>(null)
-    const laudoInputRef = useRef<HTMLInputElement>(null)
     const totalSteps = 4
 
     useEffect(() => {
@@ -109,15 +103,11 @@ export default function Cadastro() {
         if (file) setResidenciaFile(file)
     }
 
-    const handleLaudoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0]
-        if (file) setLaudoFile(file)
-    }
-
     const validateStep = (currentStep: number): string[] => {
         const errors: string[] = []
 
         if (currentStep === 1) {
+            if (!agreed) errors.push('Você precisa aceitar os termos de uso e política de privacidade.')
             if (!name.trim()) errors.push('Preencha o nome completo.')
             if (!email.trim()) errors.push('Preencha o email.')
             else if (!validateEmail(email)) errors.push('Email inválido.')
@@ -127,18 +117,19 @@ export default function Cadastro() {
         }
 
         if (currentStep === 2) {
-            if (!selectedPrefeitura) errors.push('Selecione sua cidade.')
+            if (!selectedPrefeitura) errors.push('Selecione sua prefeitura.')
         }
 
         if (currentStep === 3) {
+            // Documentos, embora os envios sejam em teoria opcionais ou tratados no painel... vamos cobrar envio se for obrigatorio.
+            // Para simplificar a experiência, permitiremos avançar, pois há um aviso visual de análise.
+        }
+
+        if (currentStep === 4) {
             if (!password) errors.push('Crie uma senha.')
             else if (password.length < 6) errors.push('A senha deve ter no mínimo 6 caracteres.')
             if (!confirmPassword) errors.push('Confirme sua senha.')
             else if (password !== confirmPassword) errors.push('As senhas não coincidem.')
-        }
-
-        if (currentStep === 4) {
-            if (!agreed) errors.push('Aceite os termos para continuar.')
         }
 
         return errors
@@ -170,11 +161,9 @@ export default function Cadastro() {
                 email,
                 password,
                 phone: phone.replace(/\D/g, '') || undefined,
-                needsWheelchair: needsElevator,
             }
-            const data = await api.post<LoginResponse>('/auth/register', payload)
-            setAuth(data.accessToken, data.user)
-            navigate('/ponto-embarque')
+            await api.post('/auth/register', payload)
+            navigate('/login')
         } catch (err) {
             if (err instanceof ApiError) {
                 const body = err.body as Record<string, unknown> | null
@@ -189,20 +178,35 @@ export default function Cadastro() {
         }
     }
 
-    const stepTitles = ['Seus dados', 'Sua cidade', 'Crie uma senha', 'Documentação']
+    const stepTitles = ['Seus dados', 'Sua cidade', 'Documentação', 'Crie uma senha']
     const stepSubtitles = [
         'Precisamos de algumas informações básicas.',
         'Isso definirá a prefeitura vinculada à sua conta.',
-        'Mínimo de 6 caracteres.',
         'Precisamos dos documentos para liberar seu passe.',
+        'Sua porta de entrada na plataforma.',
     ]
+
+    const getPasswordStrength = () => {
+        let score = 0
+        if (!password) return 0
+        if (password.length >= 6) score++
+        if (password.length >= 8) score++
+        if (/[A-Z]/.test(password)) score++
+        if (/[0-9]/.test(password)) score++
+        if (/[^A-Za-z0-9]/.test(password)) score++
+        return score
+    }
+    const strengthScore = getPasswordStrength()
+    // Máximo = 5. Vamos normalizar para uma barra de 4 pedaços (Ruim, Fraca, Boa, Forte)
+    const strengthLabel = strengthScore === 0 ? '' : strengthScore <= 2 ? 'Fraca' : strengthScore <= 3 ? 'Boa' : strengthScore <= 4 ? 'Forte' : 'Muito forte'
+    const strengthColor = strengthScore <= 2 ? '#EF4444' : strengthScore <= 3 ? '#F59E0B' : '#10B981'
 
     return (
         <div className="w-full min-h-dvh flex flex-col" style={{ background: 'var(--color-bg)' }}>
             <div className="sticky top-0 z-20" style={{ background: 'rgba(240,244,255,0.92)', backdropFilter: 'blur(20px)', borderBottom: '1px solid var(--color-border)' }}>
                 <div className="flex items-center justify-between px-5 py-4 max-w-2xl mx-auto">
                     <button
-                        onClick={() => (step > 1 ? (setStep(step - 1), setStepErrors([])) : navigate('/'))}
+                        onClick={() => (step > 1 ? (setStep(step - 1), setStepErrors([])) : navigate('/login'))}
                         className="flex items-center justify-center w-10 h-10 rounded-xl transition-all hover:bg-white active:scale-95"
                         style={{ border: '1.5px solid var(--color-border)' }}
                     >
@@ -262,16 +266,17 @@ export default function Cadastro() {
                                 <InputField label="Email" icon={<Mail size={16} />} placeholder="seu@email.com" type="email" value={email} onChange={setEmail} />
                                 <InputField label="CPF" placeholder="000.000.000-00" value={cpf} onChange={(v) => setCpf(formatCpf(v))} />
                                 <InputField label="Telefone (WhatsApp)" icon={<Phone size={16} />} placeholder="(79) 99999-0000" value={phone} onChange={(v) => setPhone(formatPhone(v))} />
-                                <label className="flex items-start gap-3 cursor-pointer group mt-1">
+                                
+                                <label className="flex items-start gap-3 cursor-pointer mt-3">
                                     <div className="relative mt-0.5 flex-shrink-0">
-                                        <input type="checkbox" checked={isPcd} onChange={(e) => { setIsPcd(e.target.checked); if (!e.target.checked) { setNeedsElevator(false); setLaudoFile(null) } }} className="sr-only" />
-                                        <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${isPcd ? 'border-primary bg-primary' : 'border-slate-300 bg-white'}`}
-                                            style={{ borderColor: isPcd ? 'var(--color-primary)' : undefined, background: isPcd ? 'var(--color-primary)' : 'white' }}>
-                                            {isPcd && <Check size={12} className="text-white" strokeWidth={3} />}
+                                        <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="sr-only" />
+                                        <div className="w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all"
+                                            style={{ borderColor: agreed ? 'var(--color-primary)' : 'var(--color-border)', background: agreed ? 'var(--color-primary)' : 'white' }}>
+                                            {agreed && <Check size={12} className="text-white" strokeWidth={3} />}
                                         </div>
                                     </div>
-                                    <span className="text-sm leading-relaxed" style={{ color: 'var(--color-text-2)' }}>
-                                        Declaro que sou pessoa com deficiência (conforme a Lei nº 13.146/2015)
+                                    <span className="text-sm font-medium leading-relaxed" style={{ color: 'var(--color-text)' }}>
+                                        Declaro que li e aceito os Termos de Uso e Política de Privacidade da plataforma.
                                     </span>
                                 </label>
                             </div>
@@ -329,15 +334,8 @@ export default function Cadastro() {
 
                         {step === 3 && (
                             <div className="flex flex-col gap-4 px-6 pb-4">
-                                <InputField label="Senha" icon={<Lock size={16} />} placeholder="Mínimo 6 caracteres" type="password" value={password} onChange={setPassword} />
-                                <InputField label="Confirmar senha" icon={<Lock size={16} />} placeholder="Repita a senha" type="password" value={confirmPassword} onChange={setConfirmPassword} />
-                            </div>
-                        )}
-
-                        {step === 4 && (
-                            <div className="flex flex-col gap-4 px-6 pb-4">
                                 <div className="p-4 rounded-xl text-sm" style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)', color: '#92400E' }}>
-                                    ⚠️ Os documentos serão analisados posteriormente. Preencha para agilizar a aprovação.
+                                    ⚠️ Os documentos serão analisados posteriormente. Preencha agora para agilizar a liberação da sua conta e emissão da carteirinha.
                                 </div>
 
                                 <input ref={photoInputRef} type="file" accept="image/*" capture="user" className="hidden" onChange={handlePhotoCapture} />
@@ -361,87 +359,41 @@ export default function Cadastro() {
                                         </div>
                                         <div className="text-center">
                                             <p className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>Tirar foto do rosto</p>
-                                            <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-3)' }}>Sem boné ou óculos</p>
+                                            <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-3)' }}>Sem chapéu, boné ou óculos de sol</p>
                                         </div>
                                     </button>
                                 )}
 
                                 <input ref={gradeInputRef} type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={handleGradeUpload} />
                                 <DocUploadButton file={gradeFile} onClear={() => setGradeFile(null)} onOpen={() => gradeInputRef.current?.click()}
-                                    icon={<FileText size={20} />} title="Grade de Horários" subtitle="PDF ou imagem da grade semestral" color="blue" />
+                                    icon={<FileText size={20} />} title="Grade de Horários" subtitle="PDF ou imagem da sua grade semestral" color="blue" />
 
                                 <input ref={residenciaInputRef} type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={handleResidenciaUpload} />
                                 <DocUploadButton file={residenciaFile} onClear={() => setResidenciaFile(null)} onOpen={() => residenciaInputRef.current?.click()}
-                                    icon={<Home size={20} />} title="Comprovante de Residência" subtitle="Conta de luz, água ou telefone recente" color="violet" />
+                                    icon={<Home size={20} />} title="Comprovante de Residência" subtitle="Conta de energia, água ou contrato recente" color="violet" />
+                            </div>
+                        )}
 
-                                {isPcd && (
-                                    <>
-                                        <div className="p-4 rounded-xl text-sm flex items-start gap-3"
-                                            style={{ background: 'rgba(99,102,241,0.06)', border: '1.5px solid rgba(99,102,241,0.18)' }}>
-                                            <Accessibility size={20} className="shrink-0 mt-0.5" style={{ color: '#6366F1' }} />
-                                            <div>
-                                                <p className="font-semibold" style={{ color: 'var(--color-text)' }}>Pessoa com Deficiência</p>
-                                                <p className="text-xs mt-1" style={{ color: 'var(--color-text-2)' }}>
-                                                    Envie o relatório médico com CID para comprovar sua condição.
-                                                </p>
+                        {step === 4 && (
+                            <div className="flex flex-col gap-5 px-6 pb-4">
+                                <div className="flex flex-col gap-1.5">
+                                    <InputField label="Senha" icon={<Lock size={16} />} placeholder="Mínimo de 6 caracteres" type="password" value={password} onChange={setPassword} />
+                                    {password.length > 0 && (
+                                        <div className="mt-2 flex flex-col gap-1.5 px-1 w-full max-w-sm mx-auto">
+                                            <div className="flex gap-1.5 h-1.5">
+                                                <div className="flex-1 rounded-full transition-all duration-500" style={{ background: strengthScore >= 1 ? strengthColor : 'var(--color-border)' }} />
+                                                <div className="flex-1 rounded-full transition-all duration-500" style={{ background: strengthScore >= 2 ? strengthColor : 'var(--color-border)' }} />
+                                                <div className="flex-1 rounded-full transition-all duration-500" style={{ background: strengthScore >= 3 ? strengthColor : 'var(--color-border)' }} />
+                                                <div className="flex-1 rounded-full transition-all duration-500" style={{ background: strengthScore >= 4 ? strengthColor : 'var(--color-border)' }} />
+                                                <div className="flex-1 rounded-full transition-all duration-500" style={{ background: strengthScore >= 5 ? strengthColor : 'var(--color-border)' }} />
                                             </div>
-                                        </div>
-
-                                        <input ref={laudoInputRef} type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={handleLaudoUpload} />
-                                        <DocUploadButton file={laudoFile} onClear={() => setLaudoFile(null)} onOpen={() => laudoInputRef.current?.click()}
-                                            icon={<FileText size={20} />} title="Relatório Médico com CID" subtitle="Laudo médico com Classificação Internacional de Doenças" color="indigo" />
-
-                                        <div className="p-4 rounded-xl" style={{ background: 'var(--color-surface)', border: '1.5px solid var(--color-border)' }}>
-                                            <p className="text-sm font-semibold mb-3" style={{ color: 'var(--color-text)' }}>
-                                                Precisa de ônibus com elevador? (para cadeirantes)
+                                            <p className="text-right text-[10px] font-bold uppercase transition-colors" style={{ color: strengthColor }}>
+                                                {strengthLabel}
                                             </p>
-                                            <div className="flex gap-3">
-                                                <button
-                                                    onClick={() => setNeedsElevator(true)}
-                                                    className="flex-1 py-3 rounded-xl text-sm font-semibold transition-all"
-                                                    style={{
-                                                        background: needsElevator ? 'rgba(37,99,235,0.08)' : 'white',
-                                                        border: needsElevator ? '2px solid var(--color-primary)' : '1.5px solid var(--color-border)',
-                                                        color: needsElevator ? 'var(--color-primary)' : 'var(--color-text-2)',
-                                                    }}
-                                                >
-                                                    Sim, preciso
-                                                </button>
-                                                <button
-                                                    onClick={() => setNeedsElevator(false)}
-                                                    className="flex-1 py-3 rounded-xl text-sm font-semibold transition-all"
-                                                    style={{
-                                                        background: !needsElevator ? 'rgba(37,99,235,0.08)' : 'white',
-                                                        border: !needsElevator ? '2px solid var(--color-primary)' : '1.5px solid var(--color-border)',
-                                                        color: !needsElevator ? 'var(--color-primary)' : 'var(--color-text-2)',
-                                                    }}
-                                                >
-                                                    Não preciso
-                                                </button>
-                                            </div>
                                         </div>
-                                    </>
-                                )}
-
-                                <label className="flex items-start gap-3 cursor-pointer mt-1">
-                                    <div className="relative mt-0.5 flex-shrink-0">
-                                        <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="sr-only" />
-                                        <div className="w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all"
-                                            style={{ borderColor: agreed ? 'var(--color-primary)' : 'var(--color-border)', background: agreed ? 'var(--color-primary)' : 'white' }}>
-                                            {agreed && <Check size={12} className="text-white" strokeWidth={3} />}
-                                        </div>
-                                    </div>
-                                    <span className="text-sm leading-relaxed" style={{ color: 'var(--color-text-2)' }}>
-                                        Declaro que as informações são verdadeiras e estou ciente das regras de suspensão por faltas.
-                                    </span>
-                                </label>
-
-                                {error && (
-                                    <div className="p-3.5 rounded-xl text-sm font-medium text-center"
-                                        style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.15)', color: '#EF4444' }}>
-                                        {error}
-                                    </div>
-                                )}
+                                    )}
+                                </div>
+                                <InputField label="Confirmar senha" icon={<Check size={16} />} placeholder="Repita a sua senha" type="password" value={confirmPassword} onChange={setConfirmPassword} />
                             </div>
                         )}
 
@@ -463,6 +415,17 @@ export default function Cadastro() {
                                 </motion.div>
                             )}
                         </AnimatePresence>
+
+                        {error && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 8 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="flex items-center gap-2.5 mx-6 mb-4 p-3 rounded-xl text-sm font-medium"
+                                style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.12)', color: '#DC2626' }}>
+                                <AlertCircle size={16} className="shrink-0" />
+                                {error}
+                            </motion.div>
+                        )}
                     </motion.div>
                 </AnimatePresence>
             </div>
@@ -477,9 +440,9 @@ export default function Cadastro() {
                     {loading ? (
                         <span className="flex items-center gap-2">
                             <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                            Enviando...
+                            Autenticando...
                         </span>
-                    ) : step < totalSteps ? 'Continuar' : 'Enviar para análise'}
+                    ) : step < totalSteps ? 'Avançar' : 'Terminar Cadastro'}
                 </button>
             </div>
         </div>
@@ -490,7 +453,7 @@ function InputField({ label, icon, placeholder, type = 'text', value, onChange }
     label: string; icon?: React.ReactNode; placeholder: string; type?: string; value: string; onChange: (v: string) => void
 }) {
     return (
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-1.5 w-full">
             <label className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>{label}</label>
             <div className="flex items-center rounded-xl overflow-hidden"
                 style={{ background: 'var(--color-surface)', border: '1.5px solid var(--color-border)' }}>

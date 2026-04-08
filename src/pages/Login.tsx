@@ -17,18 +17,16 @@ export default function Login() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+        e.stopPropagation()
         setError('')
         setLoading(true)
 
         try {
             const data = await api.post<LoginResponse>('/auth/login', { email, password })
             setAuth(data.accessToken, data.user)
-
-            const role = data.user.role
-            if (role === 'MOTORISTA') {
+            
+            if (data.user.role === 'MOTORISTA') {
                 navigate('/motorista')
-            } else if (role === 'GESTOR' || role === 'SUPER_ADMIN') {
-                navigate('/dashboard')
             } else {
                 navigate('/dashboard')
             }
@@ -104,13 +102,15 @@ export default function Login() {
                         </p>
                     </div>
 
-                    <motion.form
-                        onSubmit={handleSubmit}
+                    <motion.div
                         initial={{ opacity: 0, y: 12 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.4 }}
-                        className="flex flex-col gap-4"
                     >
+                        <form
+                            onSubmit={handleSubmit}
+                            className="flex flex-col gap-4"
+                        >
                         <div className="flex flex-col gap-1.5">
                             <label className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>Email</label>
                             <div className="flex items-center rounded-xl overflow-hidden transition-all"
@@ -188,7 +188,8 @@ export default function Login() {
                                 ) : 'Acessar plataforma'}
                             </button>
                         </div>
-                    </motion.form>
+                    </form>
+                    </motion.div>
 
                     <p className="text-center text-sm mt-8" style={{ color: 'var(--color-text-2)' }}>
                         Ainda não tem conta?{' '}

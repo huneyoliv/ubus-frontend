@@ -70,7 +70,7 @@ export default function SideNav() {
                 <div className="mx-2 my-3" style={{ height: '1px', background: 'rgba(255,255,255,0.06)' }} />
 
                 <NavLink
-                    to="/perfil"
+                    to="/me"
                     className={({ isActive }) =>
                         `flex items-center gap-3 px-4 py-3 rounded-xl transition-all group ${isActive
                             ? 'text-white'

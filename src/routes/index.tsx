@@ -13,6 +13,7 @@ import Pagamentos from '@/pages/Pagamentos'
 import MeusDados from '@/pages/MeusDados'
 import AlterarSenha from '@/pages/AlterarSenha'
 import RenovarSemestre from '@/pages/RenovarSemestre'
+import BaixaMobilidade from '@/pages/BaixaMobilidade'
 import Regras from '@/pages/Regras'
 import RedefinirSenha from '@/pages/RedefinirSenha'
 
@@ -55,15 +56,16 @@ export const router = createBrowserRouter([
                 children: [
                     { path: '/reservar', element: <Reservar /> },
                     { path: '/bilhete', element: <Bilhete /> },
-                    { path: '/perfil', element: <Perfil /> },
+                    { path: '/me', element: <Perfil /> },
                     { path: '/historico', element: <Historico /> },
                     { path: '/carteirinha', element: <Carteirinha /> },
                     { path: '/pagamentos', element: <Pagamentos /> },
                     { path: '/lider', element: <Lider /> },
-                    { path: '/meus-dados', element: <MeusDados /> },
-                    { path: '/alterar-senha', element: <AlterarSenha /> },
-                    { path: '/renovar-semestre', element: <RenovarSemestre /> },
-                    { path: '/regras', element: <Regras /> },
+                    { path: '/me/dados', element: <MeusDados /> },
+                    { path: '/me/alterar-senha', element: <AlterarSenha /> },
+                    { path: '/me/renovar-semestre', element: <RenovarSemestre /> },
+                    { path: '/me/baixa-mobilidade', element: <BaixaMobilidade /> },
+                    { path: '/me/regras', element: <Regras /> },
                     { path: '/ponto-embarque', element: <PontoEmbarque /> },
                 ],
             },
