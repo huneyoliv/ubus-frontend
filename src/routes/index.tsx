@@ -49,7 +49,7 @@ export const router = createBrowserRouter([
     { path: '/dashboard', element: <Dashboard /> },
 
     {
-        element: <ProtectedRoute allowedTypes={['ALUNO', 'LIDER', 'CARONISTA']} />,
+        element: <ProtectedRoute allowedTypes={['STUDENT', 'LIDER', 'CARONISTA']} />,
         children: [
             {
                 element: <AppLayout />,

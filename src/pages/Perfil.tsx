@@ -25,7 +25,7 @@ export default function Perfil() {
     }
 
     const roleLabel: Record<string, string> = {
-        ALUNO: 'Estudante',
+        STUDENT: 'Estudante',
         LIDER: 'Líder de Turma',
         CARONISTA: 'Caronista',
         MOTORISTA: 'Motorista',

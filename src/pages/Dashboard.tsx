@@ -15,7 +15,7 @@ export default function Dashboard() {
         return <Navigate to="/login" replace />
     }
 
-    if (user.role === 'ALUNO' || user.role === 'LIDER' || user.role === 'CARONISTA') {
+    if (user.role === 'STUDENT' || user.role === 'LIDER' || user.role === 'CARONISTA') {
         return (
             <AppLayout>
                 <Home />
