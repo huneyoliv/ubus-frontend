@@ -15,7 +15,7 @@ export default function Dashboard() {
         return <Navigate to="/login" replace />
     }
 
-    if (user.role === 'STUDENT' || user.role === 'LIDER' || user.role === 'CARONISTA') {
+    if (user.role === 'STUDENT' || user.role === 'LEADER' || user.role === 'RIDE_SHARE') {
         return (
             <AppLayout>
                 <Home />
@@ -23,7 +23,7 @@ export default function Dashboard() {
         )
     }
 
-    if (user.role === 'MOTORISTA') {
+    if (user.role === 'DRIVER') {
         return (
             <DriverLayout>
                 <MotoristaDashboard />
@@ -31,7 +31,7 @@ export default function Dashboard() {
         )
     }
 
-    if (user.role === 'GESTOR' || user.role === 'SUPER_ADMIN') {
+    if (user.role === 'MANAGER' || user.role === 'SUPER_ADMIN') {
         return (
             <ManagerLayout>
                 {user.role === 'SUPER_ADMIN' ? (

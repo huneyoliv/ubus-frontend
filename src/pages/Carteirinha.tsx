@@ -11,10 +11,10 @@ export default function Carteirinha() {
 
     const roleLabel: Record<string, string> = {
         STUDENT: 'Estudante',
-        LIDER: 'Líder de Turma',
-        CARONISTA: 'Caronista',
-        MOTORISTA: 'Motorista',
-        GESTOR: 'Gestor',
+        LEADER: 'Líder de Turma',
+        RIDE_SHARE: 'Caronista',
+        DRIVER: 'Motorista',
+        MANAGER: 'Gestor',
         SUPER_ADMIN: 'Super Admin',
     }
 

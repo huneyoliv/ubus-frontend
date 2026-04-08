@@ -25,7 +25,7 @@ export default function Login() {
             const data = await api.post<LoginResponse>('/auth/login', { email, password })
             setAuth(data.accessToken, data.user)
             
-            if (data.user.role === 'MOTORISTA') {
+            if (data.user.role === 'DRIVER') {
                 navigate('/motorista')
             } else {
                 navigate('/dashboard')

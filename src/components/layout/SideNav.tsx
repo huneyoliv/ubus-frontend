@@ -9,7 +9,7 @@ export default function SideNav() {
     const user = useAuthStore((s: any) => s.user)
     const logout = useAuthStore((s: any) => s.logout)
     const pagamentos = useAuthStore((s: any) => s.pagamentos)
-    const lider = useAuthStore((s: any) => s.lider)
+    const lider = user?.role === 'LEADER'
     const navigate = useNavigate()
 
     const navItems = [

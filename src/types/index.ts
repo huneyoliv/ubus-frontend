@@ -1,6 +1,6 @@
 /* ── Enums alinhados ao backend ── */
 
-export type RoleUsuario = 'SUPER_ADMIN' | 'GESTOR' | 'MOTORISTA' | 'LIDER' | 'STUDENT' | 'CARONISTA'
+export type RoleUsuario = 'SUPER_ADMIN' | 'MANAGER' | 'DRIVER' | 'LEADER' | 'STUDENT' | 'RIDE_SHARE'
 export type StatusCadastro = 'PENDENTE' | 'APROVADO' | 'REJEITADO'
 export type DirecaoViagem = 'IDA' | 'VOLTA'
 export type StatusViagem = 'AGENDADA' | 'ABERTA_PARA_RESERVA' | 'EM_ANDAMENTO' | 'FINALIZADA' | 'CANCELADA'

@@ -49,7 +49,7 @@ export const router = createBrowserRouter([
     { path: '/dashboard', element: <Dashboard /> },
 
     {
-        element: <ProtectedRoute allowedTypes={['STUDENT', 'LIDER', 'CARONISTA']} />,
+        element: <ProtectedRoute allowedTypes={['STUDENT', 'LEADER', 'RIDE_SHARE']} />,
         children: [
             {
                 element: <AppLayout />,
@@ -73,7 +73,7 @@ export const router = createBrowserRouter([
     },
 
     {
-        element: <ProtectedRoute allowedTypes={['MOTORISTA']} />,
+        element: <ProtectedRoute allowedTypes={['DRIVER']} />,
         children: [
             {
                 element: <DriverLayout />,
@@ -87,7 +87,7 @@ export const router = createBrowserRouter([
     },
 
     {
-        element: <ProtectedRoute allowedTypes={['GESTOR', 'SUPER_ADMIN']} />,
+        element: <ProtectedRoute allowedTypes={['MANAGER', 'SUPER_ADMIN']} />,
         children: [
             {
                 element: <ManagerLayout />,

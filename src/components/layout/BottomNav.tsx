@@ -4,7 +4,8 @@ import { useAuthStore } from '@/store/useAuthStore'
 
 export default function BottomNav() {
     const pagamentos = useAuthStore((s: any) => s.pagamentos)
-    const lider = useAuthStore((s: any) => s.lider)
+    const user = useAuthStore((s: any) => s.user)
+    const lider = user?.role === 'LEADER'
 
     const navItems = [
         { icon: Home, label: 'Início', route: '/home' },
