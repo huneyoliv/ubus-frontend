@@ -41,17 +41,21 @@ export default function ManagerValidations() {
         }
     }
 
-    async function handleAction(id: string, status: 'APROVADO' | 'REJEITADO') {
+    async function handleAction(id: string, status: 'APPROVED' | 'REJECTED') {
+        console.debug('[ManagerValidations] handleAction called', { id, status })
         setActionLoading(true)
         try {
-            await api.patch(`/users/${id}/status`, { status })
+            console.debug('[ManagerValidations] PATCH /users/' + id + '/status', { status })
+            const result = await api.patch(`/users/${id}/status`, { status })
+            console.debug('[ManagerValidations] PATCH success', result)
             setStudents(prev => prev.filter(s => s.id !== id))
             setSelectedId(() => {
                 const remaining = students.filter(s => s.id !== id)
                 return remaining.length > 0 ? remaining[0].id : null
             })
-        } catch {
-            alert(status === 'APROVADO' ? 'Erro ao aprovar.' : 'Erro ao reprovar.')
+        } catch (err) {
+            console.error('[ManagerValidations] PATCH failed', err)
+            alert(status === 'APPROVED' ? 'Erro ao aprovar.' : 'Erro ao reprovar.')
         } finally {
             setActionLoading(false)
         }
@@ -185,7 +189,7 @@ export default function ManagerValidations() {
                             </div>
                             <div className="flex items-center gap-3 w-full sm:w-auto">
                                 <button
-                                    onClick={() => handleAction(selected.id, 'REJEITADO')}
+                                    onClick={() => handleAction(selected.id, 'REJECTED')}
                                     disabled={actionLoading}
                                     className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl font-semibold text-sm transition-all"
                                     style={{ border: '1px solid rgba(239,68,68,0.3)', color: '#DC2626', background: 'rgba(239,68,68,0.04)' }}>
@@ -193,7 +197,7 @@ export default function ManagerValidations() {
                                     Reprovar
                                 </button>
                                 <button
-                                    onClick={() => handleAction(selected.id, 'APROVADO')}
+                                    onClick={() => handleAction(selected.id, 'APPROVED')}
                                     disabled={actionLoading}
                                     className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl text-white font-semibold text-sm transition-all shadow-sm"
                                     style={{ background: 'var(--color-success)' }}>

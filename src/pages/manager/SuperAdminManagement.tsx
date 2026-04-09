@@ -27,11 +27,13 @@ export default function SuperAdminManagement() {
     }, [])
 
     async function fetchMunicipalities() {
+        console.log('[SuperAdminManagement] Buscando prefeituras...')
         try {
             const data = await api.get<Prefeitura[]>('/management')
+            console.log('[SuperAdminManagement] Prefeituras recebidas:', data)
             setMunicipalities(data)
         } catch (err) {
-            console.error(err)
+            console.error('[SuperAdminManagement] Erro ao buscar prefeituras:', err)
         } finally {
             setLoading(false)
         }
@@ -41,12 +43,15 @@ export default function SuperAdminManagement() {
         e.preventDefault()
         setError(null)
         setSuccess(null)
+        console.log('[SuperAdminManagement] Criando prefeitura:', { name: muniName })
         try {
-            await api.post('/management', { name: muniName })
+            const result = await api.post('/management', { name: muniName })
+            console.log('[SuperAdminManagement] Prefeitura criada:', result)
             setSuccess('Prefeitura criada com sucesso!')
             setMuniName('')
             fetchMunicipalities()
         } catch (err: any) {
+            console.error('[SuperAdminManagement] Erro ao criar prefeitura:', err)
             setError(err.body?.message || 'Erro ao criar prefeitura')
         }
     }
@@ -55,8 +60,10 @@ export default function SuperAdminManagement() {
         e.preventDefault()
         setError(null)
         setSuccess(null)
+        console.log('[SuperAdminManagement] Criando gestor:', managerData)
         try {
-            await api.post('/management/managers', managerData)
+            const result = await api.post('/management/managers', managerData)
+            console.log('[SuperAdminManagement] Gestor criado:', result)
             setSuccess('Gestor criado com sucesso!')
             setManagerData({
                 municipalityId: '',
@@ -67,6 +74,7 @@ export default function SuperAdminManagement() {
                 phone: ''
             })
         } catch (err: any) {
+            console.error('[SuperAdminManagement] Erro ao criar gestor:', err)
             setError(err.body?.message || 'Erro ao criar gestor')
         }
     }

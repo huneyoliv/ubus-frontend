@@ -22,15 +22,28 @@ export default function Login() {
         setLoading(true)
 
         try {
+            console.log('[Login] Tentando login com:', { email })
             const data = await api.post<LoginResponse>('/auth/login', { email, password })
+            console.log('[Login] Resposta da API:', JSON.stringify(data, null, 2))
+            console.log('[Login] Role do usuário:', data.user?.role)
+            console.log('[Login] User completo:', data.user)
             setAuth(data.accessToken, data.user)
             
             if (data.user.role === 'DRIVER') {
+                console.log('[Login] Navegando para /motorista')
                 navigate('/motorista')
+            } else if (data.user.role === 'MANAGER' || data.user.role === 'SUPER_ADMIN') {
+                console.log('[Login] Navegando para /dashboard (gestor/admin)')
+                navigate('/dashboard')
             } else {
+                console.log('[Login] Navegando para /dashboard (aluno/outro)')
                 navigate('/dashboard')
             }
         } catch (err) {
+            console.error('[Login] Erro no login:', err)
+            if (err instanceof ApiError) {
+                console.error('[Login] ApiError status:', err.status, 'body:', err.body)
+            }
             if (err instanceof ApiError && err.status === 401) {
                 setError('Email ou senha incorretos.')
             } else {

@@ -11,7 +11,12 @@ import SuperAdminDashboard from '@/pages/manager/SuperAdminDashboard'
 export default function Dashboard() {
     const { user, isAuthenticated } = useAuthStore()
 
+    console.log('[Dashboard] isAuthenticated:', isAuthenticated)
+    console.log('[Dashboard] user:', user)
+    console.log('[Dashboard] user.role:', user?.role)
+
     if (!isAuthenticated || !user) {
+        console.log('[Dashboard] Não autenticado, redirecionando para /login')
         return <Navigate to="/login" replace />
     }
 
@@ -43,5 +48,10 @@ export default function Dashboard() {
         )
     }
 
-    return <Navigate to="/login" replace />
+    console.log('[Dashboard] Role não reconhecida:', user.role, '- usando fallback para AppLayout')
+    return (
+        <AppLayout>
+            <Home />
+        </AppLayout>
+    )
 }
