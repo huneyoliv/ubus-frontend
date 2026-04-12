@@ -8,7 +8,7 @@ on:
 env:
   REGISTRY: ghcr.io
   # Altere para o nome que você desejar para a imagem
-  IMAGE_NAME: ${{ github.repository }}-frontend
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build-and-push:
