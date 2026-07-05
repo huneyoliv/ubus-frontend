@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Trash2, Edit2, Plus, Calendar, Save, Bus as BusIcon, User as UserIcon } from 'lucide-react';
+import { ArrowLeft, Trash2, Edit2, Plus, Calendar, Save, Bus as BusIcon, User as UserIcon, ArrowRight, ArrowLeft as ArrowLeftIcon } from 'lucide-react';
 import {
   listRoutes,
   updateRoute,
@@ -457,8 +457,8 @@ export default function RotaDetailPage() {
         busId: selectedBusId,
         driverId: selectedDriverId || undefined,
         dates: selectedDates,
-        shifts: ['MORNING'],
-        directions: ['OUTBOUND', 'INBOUND'],
+        outboundTime: route?.departureTimeOutbound,
+        inboundTime: route?.departureTimeInbound,
       });
       setSelectedDates([]);
       loadData();
@@ -725,6 +725,27 @@ export default function RotaDetailPage() {
                 Gerar Viagens nos Dias Selecionados
               </Button>
             </div>
+
+            {route && (route.departureTimeOutbound || route.departureTimeInbound) && (() => {
+              const shiftLabel: Record<string, string> = { MORNING: 'Manhã', AFTERNOON: 'Tarde', NIGHT: 'Noite' };
+              const toShift = (t?: string) => { if (!t) return 'MORNING'; const h = parseInt(t.split(':')[0]); return h < 12 ? 'MORNING' : h < 18 ? 'AFTERNOON' : 'NIGHT'; };
+              return (
+                <div className="flex flex-wrap gap-3 text-xs font-semibold">
+                  {route.departureTimeOutbound && (
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 border border-blue-100 rounded-[8px] text-[#2563EB]">
+                      <ArrowRight className="h-3 w-3" />
+                      <span>Ida {route.departureTimeOutbound} — turno: {shiftLabel[toShift(route.departureTimeOutbound)]}</span>
+                    </div>
+                  )}
+                  {route.departureTimeInbound && (
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-[8px] text-[#434655]">
+                      <ArrowLeftIcon className="h-3 w-3" />
+                      <span>Volta {route.departureTimeInbound} — turno: {shiftLabel[toShift(route.departureTimeInbound)]}</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
 
             <div className="grid grid-cols-7 gap-2 text-center text-xs font-bold text-[#434655] border-t border-slate-100 pt-4">
               <span>Dom</span>

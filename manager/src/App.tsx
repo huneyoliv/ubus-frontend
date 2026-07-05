@@ -14,9 +14,12 @@ const OnibusDetailPage = React.lazy(() => import('./pages/frota/OnibusDetailPage
 const MotoristasPage = React.lazy(() => import('./pages/motoristas/MotoristasPage'));
 const MotoristaDetailPage = React.lazy(() => import('./pages/motoristas/MotoristaDetailPage'));
 const CadastroMotoristaPage = React.lazy(() => import('./pages/motoristas/CadastroMotoristaPage'));
+const AlunosPage = React.lazy(() => import('./pages/alunos/AlunosPage'));
+const AlunoDetailPage = React.lazy(() => import('./pages/alunos/AlunoDetailPage'));
 const Relatorios = React.lazy(() => import('./pages/Relatorios'));
 const Notificacoes = React.lazy(() => import('./pages/Notificacoes'));
 const Configuracoes = React.lazy(() => import('./pages/Configuracoes'));
+
 
 function AuthGuard({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, user } = useAuthStore();
@@ -80,6 +83,8 @@ export default function App() {
           <Route path="/motoristas" element={<AuthGuard><MotoristasPage /></AuthGuard>} />
           <Route path="/motoristas/:id" element={<AuthGuard><MotoristaDetailPage /></AuthGuard>} />
           <Route path="/motoristas/cadastro" element={<AuthGuard><CadastroMotoristaPage /></AuthGuard>} />
+          <Route path="/alunos" element={<AuthGuard><AlunosPage /></AuthGuard>} />
+          <Route path="/alunos/:id" element={<AuthGuard><AlunoDetailPage /></AuthGuard>} />
           <Route path="/relatorios" element={<AuthGuard><Relatorios /></AuthGuard>} />
           <Route path="/notificacoes" element={<AuthGuard><Notificacoes /></AuthGuard>} />
           <Route path="/configuracoes" element={<AuthGuard><Configuracoes /></AuthGuard>} />

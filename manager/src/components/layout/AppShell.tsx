@@ -6,6 +6,7 @@ import {
   Route,
   Bus,
   Users,
+  GraduationCap,
   BarChart3,
   Bell,
   Settings,
@@ -47,6 +48,7 @@ export function AppShell({ children }: AppShellProps) {
     { label: 'Rotas', path: '/rotas', icon: Route },
     { label: 'Frota', path: '/frota', icon: Bus },
     { label: 'Motoristas', path: '/motoristas', icon: Users },
+    { label: 'Alunos', path: '/alunos', icon: GraduationCap },
     { label: 'Relatórios', path: '/relatorios', icon: BarChart3 },
     { label: 'Notificações', path: '/notificacoes', icon: Bell },
     { label: 'Configurações', path: '/configuracoes', icon: Settings },
@@ -192,6 +194,14 @@ export function AppShell({ children }: AppShellProps) {
               >
                 <Users className="h-5 w-5" />
                 <span>Motoristas</span>
+              </Link>
+              <Link
+                to="/alunos"
+                onClick={() => setShowMobileMenu(false)}
+                className="flex items-center gap-3 py-3 px-4 rounded-[12px] font-semibold hover:bg-slate-800 text-slate-300 hover:text-white"
+              >
+                <GraduationCap className="h-5 w-5" />
+                <span>Alunos</span>
               </Link>
               <Link
                 to="/relatorios"

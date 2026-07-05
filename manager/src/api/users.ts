@@ -1,13 +1,74 @@
 import { api } from './client';
 import { User } from '../stores/auth.store';
 
+export interface StudentSchedule {
+  id: string;
+  userId: string;
+  universityCity: string;
+  monday: string[];
+  tuesday: string[];
+  wednesday: string[];
+  thursday: string[];
+  friday: string[];
+  saturday: string[];
+  sunday: string[];
+  gradeFileUrl: string;
+  updatedAt: string;
+}
+
+export interface TripHistoryItem {
+  tripId: string;
+  date: string;
+  routeName: string;
+  direction: 'OUTBOUND' | 'INBOUND';
+  pickupPoint: {
+    id: string;
+    name: string;
+    address?: string;
+  };
+  dropoffPoint: {
+    id: string;
+    name: string;
+    address?: string;
+  };
+  status: string;
+}
+
+export interface PaginatedTripHistory {
+  data: TripHistoryItem[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
 export async function listUsers(params: {
   role?: string;
   status?: string;
   accessibilityStatus?: string;
   municipalityId?: string;
+  search?: string;
 }): Promise<User[]> {
   const r = await api.get('/users', { params });
+  return r.data;
+}
+
+export async function getUserById(id: string): Promise<User> {
+  const r = await api.get(`/users/${id}`);
+  return r.data;
+}
+
+export async function getStudentSchedule(id: string): Promise<StudentSchedule> {
+  const r = await api.get(`/users/${id}/schedule`);
+  return r.data;
+}
+
+export async function updateStudentSchedule(id: string, payload: Partial<Omit<StudentSchedule, 'id' | 'userId' | 'gradeFileUrl' | 'updatedAt'>>): Promise<StudentSchedule> {
+  const r = await api.patch(`/users/${id}/schedule`, payload);
+  return r.data;
+}
+
+export async function getStudentTrips(id: string, params: { page?: number; limit?: number }): Promise<PaginatedTripHistory> {
+  const r = await api.get(`/users/${id}/trips`, { params });
   return r.data;
 }
 
@@ -57,3 +118,4 @@ export async function updateWithVerificationCode(payload: {
   const r = await api.put('/users/me/update-with-code', payload);
   return r.data;
 }
+

@@ -190,13 +190,22 @@ export async function getRouteCalendar(routeId: string, month: string): Promise<
   return { scheduledDates, trips };
 }
 
+export function getShiftFromTime(time: string | undefined): 'MORNING' | 'AFTERNOON' | 'NIGHT' {
+  if (!time) return 'MORNING';
+  const [hourStr] = time.split(':');
+  const hour = parseInt(hourStr, 10);
+  if (hour < 12) return 'MORNING';
+  if (hour < 18) return 'AFTERNOON';
+  return 'NIGHT';
+}
+
 export async function scheduleTrips(payload: {
   routeId: string;
   busId: string;
   driverId?: string;
   dates: string[];
-  shifts: string[];
-  directions: string[];
+  outboundTime?: string;
+  inboundTime?: string;
 }): Promise<string> {
   const municipalityId = useAuthStore.getState().user?.municipalityId || '';
   let realCapacity = 40;
@@ -206,6 +215,9 @@ export async function scheduleTrips(payload: {
   } catch (err) {
     // Ignora erro de busca
   }
+
+  const outboundShift = getShiftFromTime(payload.outboundTime);
+  const inboundShift = getShiftFromTime(payload.inboundTime);
 
   const basePayload = {
     municipalityId,
@@ -218,13 +230,13 @@ export async function scheduleTrips(payload: {
 
   const r1 = await api.post('/trips/schedule', {
     ...basePayload,
-    shift: 'MORNING',
+    shift: outboundShift,
     direction: 'OUTBOUND',
   });
 
   await api.post('/trips/schedule', {
     ...basePayload,
-    shift: 'MORNING',
+    shift: inboundShift,
     direction: 'INBOUND',
   });
 
